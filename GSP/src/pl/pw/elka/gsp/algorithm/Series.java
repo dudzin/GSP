@@ -44,6 +44,14 @@ public class Series {
 		
 	} 
 	
+	public int[] getFirstItem(){
+		long[] dates = getDatesOrdered();
+		
+		ItemSet last = dataSeq.get(dates[0]);
+		return last.getItems();
+		
+	} 
+	
 	public int[] getItemsOrdered(){
 		Collection<Long> keys = dataSeq.keySet();
 		List<Long> sorted = asSortedList(keys);
@@ -67,6 +75,44 @@ public class Series {
 		return array;
 	}
 	
+	public int[] getItemsOrderedMinusOne(){
+		Collection<Long> keys = dataSeq.keySet();
+		List<Long> sorted = asSortedList(keys);
+		
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		sorted.remove(sorted.size()-1);
+		
+		for (Long key : sorted) {
+			ItemSet itemSet = dataSeq.get(key);
+			int[] itemsInSet = itemSet.getItems();
+			for (int j : itemsInSet) {
+				list.add(j);
+				
+			}
+			
+		}
+		
+		int[] array = new int[list.size()];
+		for (int i=0; i<array.length; i++) {
+			array[i] =list.get(i);
+		}
+		return array;
+	}
+	
+	public boolean shouldCheck(int[] other){
+		int[] thisItems = getItemsOrdered();
+		int[] thisItemsMinusOne = getItemsOrderedMinusOne();
+		if(thisItems.length != other.length && (thisItemsMinusOne.length != other.length)){
+			return false;
+		}
+		for (int i = 0; i < other.length; i++) {
+			if(thisItems[i] != other[i]){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public long getLastDate(){
 		long[] dates = getDatesOrdered();
 		return dates[dates.length-1];
@@ -82,6 +128,102 @@ public class Series {
 		}
 		return array;
 	}
+	
+	public ArrayList<Series> getSeriesByRemovingLast(){
+		
+		long[] dates = getDatesOrdered();
+		if(dates.length <1){
+			return null;
+		}
+		
+		Series orig = new Series(this);
+		orig.removeLast();
+		
+		ArrayList<Series> newseries = new ArrayList<Series>();
+		ArrayList<Integer> newitems;
+		int[] items = this.getLastItem();
+		Series news;
+		ItemSet newis;
+		if(items.length!=1){
+			for (int i : items) {
+				news = new Series(orig);
+				newis = new ItemSet();
+				newitems = new ArrayList<Integer>();
+				for (int j : items) {
+					if(i!=j){
+						newitems.add(j);
+					}
+				}
+				if(newitems.size()!= 0){
+					newis.setItems(newitems);
+					
+					news.addItemSet(dates[dates.length-1], newis);
+					news.setSeriesName(""+i);
+					newseries.add(news);
+				}
+			}
+		}else {
+			
+			news = new Series(orig);
+			
+			news.setSeriesName(""+items[0]);
+			newseries.add(news);
+		}
+		
+		
+		return newseries;
+	}
+	
+	public ArrayList<Series> getSeriesByRemovingFirst(){
+		
+		long[] dates = getDatesOrdered();
+		if(dates.length <1){
+			return null;
+		}
+		
+		Series orig = new Series(this);
+		orig.removeFirst();
+		
+		ArrayList<Series> newseries = new ArrayList<Series>();
+		ArrayList<Integer> newitems;
+		int[] items = this.getFirstItem();
+		Series news;
+		ItemSet newis;
+		if(items.length!=1){
+			for (int i : items) {
+				news = new Series(orig);
+				newis = new ItemSet();
+				newitems = new ArrayList<Integer>();
+				for (int j : items) {
+					if(i!=j){
+						newitems.add(j);
+					}
+				}
+				///move by dates
+				newis.setItems(newitems);
+				news.addItemSet(dates[dates.length-1], newis);
+				news.setSeriesName(""+i);
+				newseries.add(news);
+			}
+		}else {
+			
+			news = new Series(orig);
+			
+			news.setSeriesName(""+items[0]);
+			newseries.add(news);
+		}
+		return newseries;
+	}
+	
+	/*public boolean canJoinGSP(Series other){
+		
+		if(this.equals(other)){
+			return true;
+		}
+		return false;
+	}
+	*/
+	
 	
 	public boolean canJoin(Series other){
 		
@@ -239,6 +381,22 @@ public class Series {
 		return singleLast;
 	}
 	
+	public void removeLast(){
+		long[] dates =getDatesOrdered();
+		dataSeq.remove(dates[dates.length-1]);
+		
+
+	}  
+	
+	public void removeFirst(){
+		long[] dates =getDatesOrdered();
+		for (int i = 1; i < dates.length; i++) {
+			dataSeq.put(dates[i-1], dataSeq.get(dates[i]));
+		}
+		dataSeq.remove(dates[dates.length-1]);
+		
+	}  
+	
 	@Override
 	public String toString(){
 		
@@ -251,6 +409,32 @@ public class Series {
 		
 		//System.out.println(s);
 		return s;
+	}
+	
+	@Override
+	public boolean equals(Object object){
+		
+		if(!(object instanceof Series)){
+			return false;
+		}
+		Series other = (Series) object;
+		
+		long[] thisdates = this.getDatesOrdered();
+		long[] otherdates = other.getDatesOrdered();
+		
+		if(thisdates.length != otherdates.length){
+			return false;
+		}
+		
+		for (int i = 0; i < otherdates.length; i++) {
+			if(thisdates[i] != otherdates[i]){
+				return false;
+			}
+			if(!this.getDataSeq().get(thisdates[i]).equals(other.getDataSeq().get(thisdates[i]))){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	

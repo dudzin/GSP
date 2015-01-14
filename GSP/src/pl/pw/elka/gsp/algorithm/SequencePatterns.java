@@ -270,13 +270,42 @@ public class SequencePatterns {
 		
 	}
 	
+	
+	
 	public void checkSupport() {
 
-		ArrayList<Series> candidatesToCheck = candidateTree.getRoot().getCandidateSeries();
+		ArrayList<Series> candidatesInit = candidateTree.getRoot().getCandidateSeries();
+		ArrayList<Series> candidatesToCheck = new ArrayList<Series>();
 		Set<String> keys = series.keySet();
 		Series analysedSeries;
-		supportedCandidates = new ArrayList<Series>();
 		
+		int size = candidatesInit.get(0).getDataSeq().size();
+		for(Series candidate : candidatesInit){
+			//System.out.println("candidate " + candidate);
+			
+			if(size ==1){
+				candidatesToCheck.add(candidate);
+				//System.out.println("found candidate ");
+			}else {
+				//Series candidateMinusOne = new Series(candidate);
+				//candidateMinusOne.removeLast();
+				//candidatesToCheck.add(candidate);
+				int[] candidateMinusOne = candidate.getItemsOrderedMinusOne();
+				
+				//System.out.println("candidate rem last" + candidateMinusOne);
+				for(Series suppcandidate : supportedCandidates){
+					//System.out.println("suppcandidate " + suppcandidate);
+					int[] suppCandidateMinusOne = suppcandidate.getItemsOrderedMinusOne();
+					if(suppcandidate.shouldCheck(candidateMinusOne)){
+						candidatesToCheck.add(candidate);
+						//System.out.println("found candidate ");
+						break;
+					}
+				}
+			}
+		}		
+		
+		supportedCandidates = new ArrayList<Series>();
 		for (Series candidate : candidatesToCheck) {
 			si =0L;
 			tsi=0L;

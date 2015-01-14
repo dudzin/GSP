@@ -304,7 +304,7 @@ public class SequencePatternsTest {
 			
 			SequencePatterns seqPatt = initSeqPatt("testdata/test3.csv", true);
 			seqPatt.setMaxGap(8);
-			seqPatt.setMinSupp(2);
+			seqPatt.setMinSupp(4);
 			
 			seqPatt.runAlgorithm();
 			
@@ -375,4 +375,304 @@ public class SequencePatternsTest {
 				
 				return tree;
 			}
+	
+	@Test
+	public void testRemovingLastFromItemSet(){
+		
+		Series s = new Series();
+		ItemSet itemSet = new ItemSet(0);
+		s.addItemSet(0L, itemSet);
+		itemSet = new ItemSet();
+		int[] list = new int[2];
+		list[0] =3;
+		list[1] =1;
+		itemSet.setItems(list);
+		s.addItemSet(1L, itemSet);
+		
+		ArrayList<Series> newseries = s.getSeriesByRemovingLast();
+		
+		assertEquals(2, newseries.size());
+		assertEquals(3, newseries.get(0).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(1, newseries.get(1).getDataSeq().get(1L).getItems()[0]);
+		
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s.addItemSet(1L, itemSet);
+		newseries = s.getSeriesByRemovingLast();
+		assertEquals(3, newseries.size());
+		assertEquals(3, newseries.get(0).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(7, newseries.get(0).getDataSeq().get(1L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(1).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(7, newseries.get(1).getDataSeq().get(1L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(2).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(3, newseries.get(2).getDataSeq().get(1L).getItems()[1]);
+		
+		s = new Series();
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s.addItemSet(0L, itemSet);
+		
+		newseries = s.getSeriesByRemovingLast();
+		assertEquals(3, newseries.size());
+		assertEquals(3, newseries.get(0).getDataSeq().get(0L).getItems()[0]);
+		assertEquals(7, newseries.get(0).getDataSeq().get(0L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(1).getDataSeq().get(0L).getItems()[0]);
+		assertEquals(7, newseries.get(1).getDataSeq().get(0L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(2).getDataSeq().get(0L).getItems()[0]);
+		assertEquals(3, newseries.get(2).getDataSeq().get(0L).getItems()[1]);
+		
+	}
+	
+	@Test
+	public void testRemovingFirstFromItemSet(){
+		
+		Series s = new Series();
+		ItemSet itemSet = new ItemSet(0);
+		s.addItemSet(1L, itemSet);
+		itemSet = new ItemSet();
+		int[] list = new int[2];
+		list[0] =3;
+		list[1] =1;
+		itemSet.setItems(list);
+		s.addItemSet(0L, itemSet);
+		
+		ArrayList<Series> newseries = s.getSeriesByRemovingFirst();
+		
+		assertEquals(2, newseries.size());
+		assertEquals(3, newseries.get(0).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(1, newseries.get(1).getDataSeq().get(1L).getItems()[0]);
+		
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s.addItemSet(0L, itemSet);
+		newseries = s.getSeriesByRemovingFirst();
+		assertEquals(3, newseries.size());
+		assertEquals(3, newseries.get(0).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(7, newseries.get(0).getDataSeq().get(1L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(1).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(7, newseries.get(1).getDataSeq().get(1L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(2).getDataSeq().get(1L).getItems()[0]);
+		assertEquals(3, newseries.get(2).getDataSeq().get(1L).getItems()[1]);
+		
+		s = new Series();
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s.addItemSet(0L, itemSet);
+		
+		newseries = s.getSeriesByRemovingFirst();
+		assertEquals(3, newseries.size());
+		assertEquals(3, newseries.get(0).getDataSeq().get(0L).getItems()[0]);
+		assertEquals(7, newseries.get(0).getDataSeq().get(0L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(1).getDataSeq().get(0L).getItems()[0]);
+		assertEquals(7, newseries.get(1).getDataSeq().get(0L).getItems()[1]);
+		
+		assertEquals(1, newseries.get(2).getDataSeq().get(0L).getItems()[0]);
+		assertEquals(3, newseries.get(2).getDataSeq().get(0L).getItems()[1]);
+		
+		//
+	}
+	
+	@Test
+	public void seriesEqualsTest(){
+		
+		Series s1 = new Series();
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		//itemSet = new ItemSet(0);
+		//s1.addItemSet(0L, itemSet);
+	
+		Series s2 = new Series();
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		//itemSet = new ItemSet(3);
+		//s2.addItemSet(1L, itemSet);
+		//itemSet = new ItemSet();
+		
+		assertEquals(s1,s2);
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet(4);
+		s1.addItemSet(1L, itemSet);
+	
+		 s2 = new Series();
+		 itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =3;
+		list[1] =1;
+		list[2] =7;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		itemSet = new ItemSet(0);
+		s2.addItemSet(0L, itemSet);
+		
+		assertNotEquals(s1,s2);
+		
+		ArrayList<Series> s1ser = s1.getSeriesByRemovingLast();
+		ArrayList<Series> s2ser = s2.getSeriesByRemovingFirst();
+		
+		assertEquals(s1ser.get(0), s2ser.get(0));
+		assertEquals(1, s1ser.size());
+		assertEquals(1, s2ser.size());
+		assertEquals("0", s2ser.get(0).getSeriesName());		
+		
+	}
+	
+	@Test
+	public void generateByRemovingFirst(){
+		
+		Series s1 = new Series();
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[1];
+		list[0] =1;
+		//list[1] =2;
+		//list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		Series s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		ArrayList<Series> newseries = new ArrayList<Series>();
+		newseries = s1.getSeriesByRemovingFirst();
+		
+		assertEquals(1, newseries.size());
+		assertEquals(s2, newseries.get(0));
+		
+		///////////////////////////////////////////////////////////////////////////
+		System.out.println("second stage");
+		
+		
+		s1 = new Series();
+		 itemSet = new ItemSet();
+		 list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		System.out.println("s1: " + s1);
+		newseries = s1.getSeriesByRemovingFirst();
+		assertEquals(3, newseries.size());
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =2;
+		list[1] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println("s2: " + s2);
+		assertEquals(s2, newseries.get(0));
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =1;
+		list[1] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println("s2: " + s2);
+		assertEquals(s2, newseries.get(1));
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =1;
+		list[1] =2;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println("s2: " + s2);
+		assertEquals(s2, newseries.get(2));
+		
+	}
+	
 }
