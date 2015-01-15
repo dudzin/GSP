@@ -148,6 +148,14 @@ public class SequencePatternsTest {
 		System.out.println("\n Level 2 \n");
 		
 		seqPatt.generateCandidates();
+		HashMap<String, Series> candidates = seqPatt.getCandidates();
+		System.out.println("generated series:");
+		Set<String> keySet = candidates.keySet();
+		
+		for (String key : keySet) {
+			System.out.println(key );
+		}
+		
 		assertEquals(51,seqPatt.getCandidates().size());
 		seqPatt.buildCandidateHashTree();
 		
@@ -433,6 +441,7 @@ public class SequencePatternsTest {
 		
 	}
 	
+	/*
 	@Test
 	public void testRemovingFirstFromItemSet(){
 		
@@ -491,6 +500,7 @@ public class SequencePatternsTest {
 		//
 	}
 	
+	*/
 	@Test
 	public void seriesEqualsTest(){
 		
@@ -590,7 +600,7 @@ public class SequencePatternsTest {
 		
 		assertEquals(1, newseries.size());
 		assertEquals(s2, newseries.get(0));
-		
+		assertEquals(s1, newseries.get(0).getParent());
 		///////////////////////////////////////////////////////////////////////////
 		System.out.println("second stage");
 		
@@ -672,7 +682,618 @@ public class SequencePatternsTest {
 		
 		System.out.println("s2: " + s2);
 		assertEquals(s2, newseries.get(2));
+		assertEquals(s1, newseries.get(0).getParent());
+		assertEquals(s1, newseries.get(1).getParent());
+		assertEquals(s1, newseries.get(2).getParent());
+	}
+	
+	@Test
+	public void generateByRemovingLast(){
+		
+		Series s1 = new Series();
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =4;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		Series s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		ArrayList<Series> newseries = new ArrayList<Series>();
+		newseries = s1.getSeriesByRemovingLast();
+		
+		assertEquals(1, newseries.size());
+		assertEquals(s2, newseries.get(0));
+		assertEquals(s1, newseries.get(0).getParent());
+		///////////////////////////////////////////////////////////////////////////
+		System.out.println("second stage");
+		
+		
+		s1 = new Series();
+		 itemSet = new ItemSet();
+		 list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		System.out.println("s1: " + s1);
+		newseries = s1.getSeriesByRemovingLast();
+		assertEquals(3, newseries.size());
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =5;
+		list[1] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println("s2: " + s2);
+		assertEquals(s2, newseries.get(0));
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =4;
+		list[1] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println("s2: " + s2);
+		assertEquals(s2, newseries.get(1));
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =4;
+		list[1] =5;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println("s2: " + s2);
+		assertEquals(s2, newseries.get(2));
+		assertEquals(s1, newseries.get(0).getParent());
+		assertEquals(s1, newseries.get(1).getParent());
+		assertEquals(s1, newseries.get(2).getParent());
+	}
+	
+	@Test
+	public void canJoinTest(){
+		
+		Series s1 = new Series();
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[1];
+		list[0] =1;	
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		Series s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		ArrayList<Series> newseries1 = new ArrayList<Series>();
+		ArrayList<Series> newseries2 = new ArrayList<Series>();
+		newseries1 = s1.getSeriesByRemovingFirst();
+		newseries2 = s2.getSeriesByRemovingLast();
+		
+		assertEquals(newseries1.get(0), newseries2.get(0));
+		
+		////////////////////////////////////////
+		System.out.println("second stage");
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =2;
+		list[1] =3;
+		//list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =10;
+		itemSet.setItems(list);
+		s2.addItemSet(3L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		newseries1 = s1.getSeriesByRemovingFirst();
+		newseries2 = s2.getSeriesByRemovingLast();
+		
+		assertEquals(3, newseries1.size());
+		assertEquals(1, newseries2.size());
+		
+		assertEquals(newseries1.get(0), newseries2.get(0));
+		assertNotEquals(newseries1.get(1), newseries2.get(0));
+		assertNotEquals(newseries1.get(2), newseries2.get(0));
+		
+		////////////////////////////////////////
+		
+		System.out.println("third stage");
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =2;
+		list[1] =3;
+		//list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[4];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		list[3] =7;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		newseries1 = s1.getSeriesByRemovingFirst();
+		newseries2 = s2.getSeriesByRemovingLast();
+		
+		assertEquals(3, newseries1.size());
+		assertEquals(4, newseries2.size());
+		
+		assertNotEquals(newseries1.get(0), newseries2.get(0));
+		assertNotEquals(newseries1.get(1), newseries2.get(0));
+		assertNotEquals(newseries1.get(2), newseries2.get(0));
+		
+		assertNotEquals(newseries1.get(0), newseries2.get(1));
+		assertNotEquals(newseries1.get(1), newseries2.get(1));
+		assertNotEquals(newseries1.get(2), newseries2.get(1));
+		
+		assertNotEquals(newseries1.get(0), newseries2.get(2));
+		assertNotEquals(newseries1.get(1), newseries2.get(2));
+		assertNotEquals(newseries1.get(2), newseries2.get(2));
+		
+		assertEquals(newseries1.get(0), newseries2.get(3));
+		assertNotEquals(newseries1.get(1), newseries2.get(3));
+		assertNotEquals(newseries1.get(2), newseries2.get(3));
 		
 	}
 	
+	@Test
+	public void mergeTest(){
+		
+		Series s1 = new Series();
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		Series s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =2;
+		list[1] =3;
+		//list[2] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =4;
+		list[1] =5;
+		list[2] =7;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		ArrayList<Series> serieslist = s1.merge(s2);
+		
+		assertNull(serieslist);
+		
+		itemSet = new ItemSet();
+		list = new int[4];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		list[3] =7;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		
+		System.out.println(s2);
+		
+		Series s4 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =1;
+		list[1] =2;
+		list[2] =3;
+		itemSet.setItems(list);
+		s4.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[4];
+		list[0] =4;
+		list[1] =5;
+		list[2] =6;
+		list[3] =7;
+		itemSet.setItems(list);
+		s4.addItemSet(1L, itemSet);
+		
+		
+		serieslist = s1.merge(s2);
+		Series s3 = serieslist.get(0);
+		assertEquals(s4, s3);
+		System.out.println(s3);
+		
+		///////////////////////////////
+		System.out.println("stage second");
+		
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =1;
+		list[1] =2;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+	
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =2;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =3;
+		list[1] =4;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		s4 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =1;
+		list[1] =2;
+		itemSet.setItems(list);
+		s4.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =3;
+		list[1] =4;
+		itemSet.setItems(list);
+		s4.addItemSet(1L, itemSet);
+		
+		serieslist = s1.merge(s2);
+		s3 = serieslist.get(0);
+		assertEquals(s4, s3);
+		System.out.println(s3);
+		
+///////////////////////////////
+		System.out.println("stage third");
+		
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =1;
+		list[1] =2;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =3;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =2;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =3;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =5;
+		itemSet.setItems(list);
+		s2.addItemSet(2L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		s4 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =1;
+		list[1] =2;
+		itemSet.setItems(list);
+		s4.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =3;
+		itemSet.setItems(list);
+		s4.addItemSet(1L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =5;
+		itemSet.setItems(list);
+		s4.addItemSet(2L, itemSet);
+		
+		serieslist = s1.merge(s2);
+		 s3 = serieslist.get(0);
+		assertEquals(s4, s3);
+		System.out.println(s3);
+		
+		//to test :0:[8] 1:[8]  &  supp: 2 , series :0:[5,8]  [ supp: 0 , series :0:[5,8] 1:[8] ,  supp: 0 , series :0:[5,8] 1:[8] ]
+		
+///////////////////////////////
+		System.out.println("stage 4");
+		
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =11;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =8;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =5;
+		list[1] =8;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		s4 = new Series();
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =11;
+		itemSet.setItems(list);
+		s4.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =5;
+		list[1] =8;
+		itemSet.setItems(list);
+		s4.addItemSet(1L, itemSet);
+
+		
+		serieslist = s1.merge(s2);
+		s3 = serieslist.get(0);
+		assertEquals(s4, s3);
+		System.out.println(s3);
+
+		//from  supp: 2 , series :0:[10,11]  &  supp: 2 , series :0:[9,11]  [ supp: 0 , series :0:[9,11] ,  
+		                                                                    
+		System.out.println("stage 5");
+		
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =10;
+		list[1] =11;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =9;
+		list[1] =11;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		s4 = new Series();
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =9;
+		list[1] =10;
+		list[2] =11;
+		itemSet.setItems(list);
+		s4.addItemSet(0L, itemSet);
+		
+
+		
+		serieslist = s1.merge(s2);
+		s3 = serieslist.get(0);
+		assertEquals(s4, s3);
+		System.out.println(s3);
+		
+		////////////////////
+		System.out.println("stage 6");
+		
+		
+		s1 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =9;
+		list[1] =11;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =9;
+		list[1] =11;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		System.out.println(s1);
+		System.out.println(s2);
+		
+		serieslist = s1.merge(s2);
+		
+		assertEquals(null, serieslist);
+		System.out.println(s3);
+
+	}
 }

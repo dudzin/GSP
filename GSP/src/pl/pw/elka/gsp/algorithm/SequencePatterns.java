@@ -80,6 +80,8 @@ public class SequencePatterns {
 	public boolean generateCandidates() {
 
 		if(minSupp != 0){
+			
+			/*
 			if(treeLevel ==0 ){
 				initialCandidateGeneration();
 			}else if(treeLevel ==1){
@@ -87,6 +89,15 @@ public class SequencePatterns {
 			}else {
 				candidateGenerationMoreThan2();
 			}
+			*/
+			
+			if(treeLevel ==0 ){
+				initialCandidateGeneration();
+			
+			}else {
+				candidateGenerationGSP();
+			}
+			
 			treeLevel++;
 		}else {
 			return false;
@@ -210,6 +221,33 @@ public class SequencePatterns {
 		}
 		fillCandidates(newCandidates);
 	}
+	
+	private void candidateGenerationGSP() {
+
+		newCandidates = new ArrayList<Series>();
+		
+		for(int i =0; i< supportedCandidates.size(); i++){
+			
+			lparent = supportedCandidates.get(i);
+			newseries = new Series(lparent);
+			llast = newseries.getLastItem();
+			
+			for(int j = 0; j< supportedCandidates.size() ; j++){
+				rparent = supportedCandidates.get(j);
+
+				
+				
+				 ArrayList<Series> newserieslist = lparent.merge(rparent);
+				if(newserieslist != null){
+					newCandidates.addAll(newserieslist);
+				}
+				
+				System.out.println("from " + lparent + " & " + rparent + " "+ newserieslist);
+			}
+		}
+		fillCandidates(newCandidates);
+	}
+	
 	
 	private void condition1(int i, int j){
 		//System.out.println("generate condition 1" );

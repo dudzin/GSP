@@ -17,6 +17,7 @@ public class Series {
 	private String seriesName;
 	private HashMap<Long, ItemSet> dataSeq;
 	private int support;
+	private Series parent;
 	
 	public Series(){
 		dataSeq = new HashMap<Long, ItemSet>();
@@ -28,7 +29,7 @@ public class Series {
 		dataSeq = new HashMap<Long, ItemSet>();
 		seriesName = orig.seriesName;
 		Set<Long> keys = orig.getDataSeq().keySet();
-		
+		parent = orig.getParent();
 		
 		for (Long key : keys) {
 			dataSeq.put(key, new ItemSet(orig.getDataSeq().get(key)));
@@ -137,9 +138,16 @@ public class Series {
 		}
 		
 		Series orig = new Series(this);
-		orig.removeLast();
-		
+
 		ArrayList<Series> newseries = new ArrayList<Series>();
+		if(orig.getLastItem().length ==1){
+			orig.removeLast();
+			orig.setParent(this);
+			orig.setSeriesName(""+this.getFirstItem()[0]);
+			newseries.add(orig);
+			return newseries;
+		}		
+		
 		ArrayList<Integer> newitems;
 		int[] items = this.getLastItem();
 		Series news;
@@ -155,10 +163,10 @@ public class Series {
 					}
 				}
 				if(newitems.size()!= 0){
-					newis.setItems(newitems);
-					
+					newis.setItems(newitems);					
 					news.addItemSet(dates[dates.length-1], newis);
 					news.setSeriesName(""+i);
+					news.setParent(this);
 					newseries.add(news);
 				}
 			}
@@ -180,11 +188,16 @@ public class Series {
 		if(dates.length <1){
 			return null;
 		}
-		
-		Series orig = new Series(this);
-		orig.removeFirst();
-		
 		ArrayList<Series> newseries = new ArrayList<Series>();
+		Series orig = new Series(this);
+		if(orig.getFirstItem().length ==1){
+			orig.removeFirst();
+			orig.setParent(this);
+			orig.setSeriesName(""+this.getFirstItem()[0]);
+			newseries.add(orig);
+			return newseries;
+		}
+		
 		ArrayList<Integer> newitems;
 		int[] items = this.getFirstItem();
 		Series news;
@@ -201,8 +214,9 @@ public class Series {
 				}
 				///move by dates
 				newis.setItems(newitems);
-				news.addItemSet(dates[dates.length-1], newis);
+				news.addItemSet(dates[0], newis);
 				news.setSeriesName(""+i);
+				news.setParent(this);
 				newseries.add(news);
 			}
 		}else {
@@ -214,16 +228,77 @@ public class Series {
 		}
 		return newseries;
 	}
-	
-	/*public boolean canJoinGSP(Series other){
+
+
+	public ArrayList<Series> merge(Series other) {
 		
-		if(this.equals(other)){
-			return true;
+		ArrayList<Series> sl1 = this.getSeriesByRemovingFirst();
+		ArrayList<Series> sl2 = other.getSeriesByRemovingLast();
+		
+		ArrayList<Series> result = new ArrayList<Series>();
+		Series s1 = new Series();
+		Series s2 = new Series();
+		boolean found = false;
+		
+		if(this.equals(other) && this.getItemsOrdered().length >1){
+			return null;
 		}
-		return false;
+		
+		for (Series si : sl1) {
+			
+			for (Series sj : sl2) {
+				if(si.equals(sj)){
+					found = true;
+					s1 = si;
+					s2 = sj;
+					break;
+				}
+			}
+			if(found) {
+				break;
+			}
+		}
+		if(!found){
+			return null;
+		}
+		
+		Series newseries = new Series(s1.getParent());
+		if(s2.getParent().getLastItem().length ==1){
+			ItemSet itemSet = new ItemSet(s2.getParent().getLastItem()[0]);
+			long newdate = s1.getParent().getLastDate()+1;
+			newseries.addItemSet(newdate, itemSet);
+		}else {
+			if(s1.getDataSeq().size() == this.getDataSeq().size() && s2.getDataSeq().size() == other.getDataSeq().size()){
+				long newdate = s1.getParent().getLastDate();
+				ItemSet itemSet = new ItemSet();
+				itemSet.setItems(s1.getParent().getDataSeq().get(newdate).getItems(), s2.getParent().getDataSeq().get(newdate).getItems());
+				newseries.addItemSet(newdate, itemSet);
+			}
+			else {
+				long newdate = s1.getParent().getLastDate();
+				ItemSet itemSet = new ItemSet(s2.getParent().getDataSeq().get(s2.getParent().getLastDate()));
+				newseries.addItemSet(newdate, itemSet);
+			}
+		}
+		
+		result.add(newseries);
+		
+		if(!this.equals(other) && this.dataSeq.size() ==1 && other.dataSeq.size() ==1){
+			if(this.getLastItem().length ==1 ){
+				if( other.getLastItem().length ==1 
+				){
+			newseries = new Series();
+			ItemSet itemSet = new ItemSet();
+			itemSet.setItems(this.getLastItem(), other.getLastItem());
+			itemSet.sort();
+			if(itemSet.getItems() != this.getItemsOrdered())
+			newseries.addItemSet(0L, itemSet);
+		}}}
+		
+		result.add(newseries);
+		
+		return result;
 	}
-	*/
-	
 	
 	public boolean canJoin(Series other){
 		
@@ -474,4 +549,14 @@ public class Series {
 	public void setDataSeq(HashMap<Long, ItemSet> dataSeq) {
 		this.dataSeq = dataSeq;
 	}
+
+	public Series getParent() {
+		return parent;
+	}
+
+	public void setParent(Series parent) {
+		this.parent = parent;
+	}
+
+
 }
