@@ -323,8 +323,9 @@ public class SequencePatternsTest {
 			SequencePatterns seqPatt = initSeqPatt("testdata/test3.csv", true);
 			seqPatt.setMaxGap(8);
 			seqPatt.setMinSupp(2);
+			seqPatt.setWithHashTree(true);
 			
-			seqPatt.runAlgorithm(true);
+			seqPatt.runAlgorithm();
 			
 			
 			
