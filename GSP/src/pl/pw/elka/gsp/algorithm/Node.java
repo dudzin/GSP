@@ -6,6 +6,8 @@ public abstract class  Node {
 
 	private int level, threshold, hash;
 	private InteriorNode parent;
+	private boolean check;
+	private boolean[] hashesToCheck;
 	
 	public Node(int hash, int threshold){
 		this.hash = hash;
@@ -16,7 +18,25 @@ public abstract class  Node {
 	
 	public abstract void print(String offset);
 	
+	public abstract ArrayList<Series> getCandidateSeries(int minSupp);
 	public abstract ArrayList<Series> getCandidateSeries();
+	
+	public abstract boolean checkNode();
+	
+	public String toCheckToString(){
+		if(!check){
+			return "do not check";
+		}
+		String s = "[";
+		for (int i=0; i< hashesToCheck.length; i++) {
+			if(hashesToCheck[i]){
+				s += i+",";
+			}
+		}
+		s += "]";
+		return s;
+	}
+	
 	
 	public int getLevel() {
 		return level;
@@ -52,5 +72,21 @@ public abstract class  Node {
 	
 	public int hash(int key){
 		return key % getHash();
+	}
+
+	public boolean isCheck() {
+		return check;
+	}
+
+	public void setCheck(boolean check) {
+		this.check = check;
+	}
+
+	public boolean[] getHashesToCheck() {
+		return hashesToCheck;
+	}
+
+	public void setHashesToCheck(boolean[] hashesToCheck) {
+		this.hashesToCheck = hashesToCheck;
 	}
 }

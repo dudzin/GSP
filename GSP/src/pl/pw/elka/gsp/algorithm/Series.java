@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.rmi.CORBA.Util;
 
 
@@ -16,12 +17,20 @@ public class Series {
 	
 	private String seriesName;
 	private HashMap<Long, ItemSet> dataSeq;
-	private int support;
+	private ArrayList<Series> newseries;
+	private ArrayList<Integer> newitems;
+	//private int support;
 	private Series parent;
+	private Series orig;
+	private HashSet<String> supportedByHash, supportedByCheck;
+	
+	
 	
 	public Series(){
 		dataSeq = new HashMap<Long, ItemSet>();
-		support=0;
+		//support=0;
+		supportedByHash = new HashSet<String>();
+		supportedByCheck = new HashSet<String>();
 	}
 	
 	public Series(Series orig){
@@ -34,7 +43,9 @@ public class Series {
 		for (Long key : keys) {
 			dataSeq.put(key, new ItemSet(orig.getDataSeq().get(key)));
 		}
-		
+		//support =0;
+		supportedByHash = new HashSet<String>();
+		supportedByCheck = new HashSet<String>();
 	}
 	
 	public int[] getLastItem(){
@@ -137,50 +148,50 @@ public class Series {
 			return null;
 		}
 		
-		Series orig = new Series(this);
-
-		ArrayList<Series> newseries = new ArrayList<Series>();
+		orig = new Series(this);
+		newseries = new ArrayList<Series>();
+		
 		if(orig.getLastItem().length ==1){
-			orig.removeLast();
-			orig.setParent(this);
-			orig.setSeriesName(""+this.getFirstItem()[0]);
-			newseries.add(orig);
+			getSeriesByRemovingLastSizeOne();
 			return newseries;
 		}		
+		getSeriesByRemovingLastSizeMoreThanOne( dates);		
+		return newseries;
+	}
+	
+	private void getSeriesByRemovingLastSizeOne(){
+		orig.removeLast();
+		orig.setParent(this);
+		orig.setSeriesName(""+this.getFirstItem()[0]);
+		newseries.add(orig);
 		
-		ArrayList<Integer> newitems;
+	}
+	
+	private void getSeriesByRemovingLastSizeMoreThanOne(long[] dates){
 		int[] items = this.getLastItem();
 		Series news;
 		ItemSet newis;
-		if(items.length!=1){
-			for (int i : items) {
-				news = new Series(orig);
-				newis = new ItemSet();
-				newitems = new ArrayList<Integer>();
-				for (int j : items) {
-					if(i!=j){
-						newitems.add(j);
-					}
-				}
-				if(newitems.size()!= 0){
-					newis.setItems(newitems);					
-					news.addItemSet(dates[dates.length-1], newis);
-					news.setSeriesName(""+i);
-					news.setParent(this);
-					newseries.add(news);
+	
+		for (int i : items) {
+			news = new Series(orig);
+			newis = new ItemSet();
+			newitems = new ArrayList<Integer>();
+			for (int j : items) {
+				if(i!=j){
+					newitems.add(j);
 				}
 			}
-		}else {
-			
-			news = new Series(orig);
-			
-			news.setSeriesName(""+items[0]);
-			newseries.add(news);
-		}
+			if(newitems.size()!= 0){
+				newis.setItems(newitems);					
+				news.addItemSet(dates[dates.length-1], newis);
+				news.setSeriesName(""+i);
+				news.setParent(this);
+				newseries.add(news);
+			}
+		}		
 		
-		
-		return newseries;
 	}
+	
 	
 	public ArrayList<Series> getSeriesByRemovingFirst(){
 		
@@ -188,47 +199,48 @@ public class Series {
 		if(dates.length <1){
 			return null;
 		}
-		ArrayList<Series> newseries = new ArrayList<Series>();
-		Series orig = new Series(this);
+		newseries = new ArrayList<Series>();
+		orig = new Series(this);
 		if(orig.getFirstItem().length ==1){
-			orig.removeFirst();
-			orig.setParent(this);
-			orig.setSeriesName(""+this.getFirstItem()[0]);
-			newseries.add(orig);
+			getSeriesByRemovingFirstSizeOne();
 			return newseries;
 		}
 		
+		getSeriesByRemovingFirstSizeMoreThanOne(dates);
+		
+		return newseries;
+	}
+	
+	private void getSeriesByRemovingFirstSizeOne(){
+		orig.removeFirst();
+		orig.setParent(this);
+		orig.setSeriesName(""+this.getFirstItem()[0]);
+		newseries.add(orig);
+	}
+	
+	private void getSeriesByRemovingFirstSizeMoreThanOne(long[] dates){
 		ArrayList<Integer> newitems;
 		int[] items = this.getFirstItem();
 		Series news;
 		ItemSet newis;
-		if(items.length!=1){
-			for (int i : items) {
-				news = new Series(orig);
-				newis = new ItemSet();
-				newitems = new ArrayList<Integer>();
-				for (int j : items) {
-					if(i!=j){
-						newitems.add(j);
-					}
-				}
-				///move by dates
-				newis.setItems(newitems);
-				news.addItemSet(dates[0], newis);
-				news.setSeriesName(""+i);
-				news.setParent(this);
-				newseries.add(news);
-			}
-		}else {
-			
+		for (int i : items) {
 			news = new Series(orig);
+			newis = new ItemSet();
+			newitems = new ArrayList<Integer>();
+			for (int j : items) {
+				if(i!=j){
+					newitems.add(j);
+				}
+			}
 			
-			news.setSeriesName(""+items[0]);
+			newis.setItems(newitems);
+			news.addItemSet(dates[0], newis);
+			news.setSeriesName(""+i);
+			news.setParent(this);
 			newseries.add(news);
 		}
-		return newseries;
+		
 	}
-
 
 	public ArrayList<Series> merge(Series other) {
 		
@@ -475,13 +487,13 @@ public class Series {
 	@Override
 	public String toString(){
 		
-		String s=" supp: " + support + " , series :";
+		String s=" series :";
 		Set<Long> keys = getDataSeq().keySet();
 		for (Long string : keys) {
 			
 			s += string + ":" + getDataSeq().get(string).toString() + " ";
 		}
-		
+		s += " supp: " + supportedByHash.size() + " by Hash: "+ supportedByHash  + " by check:" + supportedByCheck  ;
 		//System.out.println(s);
 		return s;
 	}
@@ -520,18 +532,19 @@ public class Series {
 	  return list;
 	}
 
-	public int getSupport() {
-		return support;
+	public int getSupportByHash() {
+		//support = supportedBy.size();
+		return supportedByHash.size();
 	}
 
-	public void setSupport(int support) {
+	/*public void setSupport(int support) {
 		this.support = support;
 	}
 	
 	public void supportIncr(){
 		support++;
 	}
-	
+	*/
 	public String getSeriesName() {
 		return seriesName;
 	}
@@ -558,5 +571,42 @@ public class Series {
 		this.parent = parent;
 	}
 
+	public HashSet<String> getsupportedByHash() {
+		return supportedByHash;
+	}
+
+	public void setsupportedByHash(HashSet<String> supportedBy) {
+		this.supportedByHash = supportedBy;
+	}
+	
+	public void addSupportedByHash(String name){
+		if(name ==null ){
+			int i =0;
+		}
+		supportedByHash.add(name);
+	}
+	
+	public boolean isSupportedByHash(String name){
+		return supportedByHash.contains(name);
+	}
+	
+	public void addSupportedByCheck(String name){
+		if(name ==null ){
+			int i =0;
+		}
+		supportedByCheck.add(name);
+	}
+
+	public HashSet<String> getSupportedByCheck() {
+		return supportedByCheck;
+	}
+
+	public void setSupportedByCheck(HashSet<String> supportedByCheck) {
+		this.supportedByCheck = supportedByCheck;
+	}
+	
+	public int getSupportByCheck() {
+		return supportedByCheck.size();
+	}
 
 }

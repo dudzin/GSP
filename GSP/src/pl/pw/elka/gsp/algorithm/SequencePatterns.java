@@ -29,6 +29,7 @@ public class SequencePatterns {
 	private Long si =0L, tsi=0L, ts1 =0L;
 	private long[] dates ;
 	private long t,l;
+	private int windowSize;
 	
 	public SequencePatterns(String fileName){
 		candidateTree = new CandidateHashTree(-1, -1);
@@ -42,7 +43,7 @@ public class SequencePatterns {
 		series = csvReader.read(fileName,dateFormat, hierarchy);
 	}
 	
-	public void runAlgorithm(){
+	public void runAlgorithm(boolean withHashTree){
 		int i=1, cnt=0;
 		long startTime = System.currentTimeMillis();
 		do {
@@ -50,10 +51,11 @@ public class SequencePatterns {
 			System.out.println("Step: " + i);
 			System.out.println("generated candidates :" + candidates.size());
 			buildCandidateHashTree();
-			checkSupport();
+			checkSupport(withHashTree);
 			System.out.println("confirmed sequences  :" + (resultSeries.size()- cnt));
 			cnt =  resultSeries.size();
-			i++;
+			i++; 
+			System.out.println("ver " + withHashTree + " " + resultSeries.size());
 		} while (supportedCandidates.size() !=0);
 		long endTime = System.currentTimeMillis();
 		
@@ -79,18 +81,7 @@ public class SequencePatterns {
 
 	public boolean generateCandidates() {
 
-		if(minSupp != 0){
-			
-			/*
-			if(treeLevel ==0 ){
-				initialCandidateGeneration();
-			}else if(treeLevel ==1){
-				candidateGeneration2();
-			}else {
-				candidateGenerationMoreThan2();
-			}
-			*/
-			
+		if(minSupp != 0){			
 			if(treeLevel ==0 ){
 				initialCandidateGeneration();
 			
@@ -123,70 +114,6 @@ public class SequencePatterns {
 
 	}
 	
-	private void candidateGeneration2() {
-		
-		newCandidates = new ArrayList<Series>();
-
-		for(int i =0; i< supportedCandidates.size(); i++){
-			
-			lparent = supportedCandidates.get(i);
-			newseries = new Series(lparent);
-			llast = newseries.getLastItem();
-			
-			for(int j = i+1; j< supportedCandidates.size() ; j++){
-				rparent = supportedCandidates.get(j);
-				rlast = rparent.getLastItem();
-				
-				if(llast == rlast){
-					newseries = createNewCandidate(lparent, rlast);
-					newCandidates.add(newseries);
-				}else {
-					newseries = createNewCandidate(lparent, rlast);
-					newCandidates.add(newseries);
-					newseries = createNewCandidate(rparent, llast);
-					newCandidates.add(newseries);
-					newseries = createNewCandidate(lparent, rlast , llast);
-					newCandidates.add(newseries);
-				}
-			}
-			newseries = createNewCandidateAdd(lparent, llast);
-			newCandidates.add(newseries);
-		}
-		fillCandidates(newCandidates);
-	}
-	
-	private Series createNewCandidate(Series parent, int[] items) {
-		ItemSet newItemSet = new ItemSet();
-		Series newseries = new Series(parent);
-		newItemSet.setItems(items);
-		newseries.addItemSet(parent.getLastDate()+1, newItemSet);
-		return newseries;
-	}
-	
-	private Series createNewCandidate(Series parent, int[] items1, int[] items2) {
-		ItemSet newItemSet = new ItemSet();
-		Series newseries = new Series(parent);
-		newItemSet.setItems(items1 , items2);
-		newseries.addItemSet(parent.getLastDate(), newItemSet);
-		return newseries;
-	}
-	
-	private Series createNewCandidateAdd(Series parent, int[] items) {
-		ItemSet newItemSet = new ItemSet();
-		Series newseries = new Series(parent);
-		newItemSet.setItems(items);
-		newseries.addItemSet(parent.getLastDate()+1, newItemSet);
-		return newseries;
-	}
-	
-	private Series createNewCandidateAdd(Series parent, int[] items1, int[] items2) {
-		ItemSet newItemSet = new ItemSet();
-		Series newseries = new Series(parent);
-		newItemSet.setItems(items1, items2);
-		newseries.addItemSet(parent.getLastDate(), newItemSet);
-		return newseries;
-	}
-	
 	private void fillCandidates(ArrayList<Series> newCandidates2) {
 		candidates = new HashMap<String, Series>();
 		for (int i =0; i<newCandidates.size() ; i++) {
@@ -195,37 +122,9 @@ public class SequencePatterns {
 		
 	}
 	
-	private void candidateGenerationMoreThan2() {
-
-		newCandidates = new ArrayList<Series>();
-		
-		for(int i =0; i< supportedCandidates.size(); i++){
-			
-			lparent = supportedCandidates.get(i);
-			newseries = new Series(lparent);
-			llast = newseries.getLastItem();
-			
-			for(int j = i; j< supportedCandidates.size() ; j++){
-				rparent = supportedCandidates.get(j);
-				rlast = rparent.getLastItem();
-				//System.out.println("from " + lparent + " & " + rparent);
-				char cond3 = lparent.canJoinCondition3(rparent);
-				if(lparent.canJoinCondition1(rparent)){	
-					condition1(i,j);
-				}else if(lparent.canJoinCondition2(rparent)){
-					condition2(i,j);
-				}else if(cond3 != 'n'){
-					condition3(i, j, cond3);
-				}
-			}
-		}
-		fillCandidates(newCandidates);
-	}
-	
 	private void candidateGenerationGSP() {
 
 		newCandidates = new ArrayList<Series>();
-		
 		for(int i =0; i< supportedCandidates.size(); i++){
 			
 			lparent = supportedCandidates.get(i);
@@ -234,70 +133,17 @@ public class SequencePatterns {
 			
 			for(int j = 0; j< supportedCandidates.size() ; j++){
 				rparent = supportedCandidates.get(j);
-
-				
-				
-				 ArrayList<Series> newserieslist = lparent.merge(rparent);
+				ArrayList<Series> newserieslist = lparent.merge(rparent);
 				if(newserieslist != null){
 					newCandidates.addAll(newserieslist);
 				}
-				
-				System.out.println("from " + lparent + " & " + rparent + " "+ newserieslist);
+				//System.out.println("from " + lparent + " & " + rparent + " "+ newserieslist);
 			}
 		}
 		fillCandidates(newCandidates);
 	}
 	
 	
-	private void condition1(int i, int j){
-		//System.out.println("generate condition 1" );
-		
-		if(i==j){
-			//G(P)(x)(x)
-			newseries = createNewCandidateAdd(lparent, llast);
-			newCandidates.add(newseries);
-			//System.out.println("generate " + newseries);
-		}else {
-			//G(P)(x)(y)
-			newseries = createNewCandidate(lparent, rlast);
-			newCandidates.add(newseries);
-			//System.out.println("generate " + newseries);
-			//G(P)(y)(x)
-			newseries = createNewCandidate(rparent, llast);
-			newCandidates.add(newseries);
-			//System.out.println("generate " + newseries);
-			//G(P)(x,y)
-			newseries = createNewCandidate(lparent, rlast , llast);
-			newCandidates.add(newseries);
-			//System.out.println("generate " + newseries);
-			
-		}	
-	}
-	
-	private void condition2(int i, int j ){
-		//System.out.println("generate condition 2" );
-		newseries = createNewCandidateAdd(lparent, llast, rlast);
-		newCandidates.add(newseries);
-		//System.out.println("generate " + newseries);
-	}
-	
-	private void condition3(int i, int j, char cond3){
-		if(cond3 == 'o'){
-			
-			//System.out.println("generate condition 3" );
-			newseries = createNewCandidate(lparent, rlast);
-			newCandidates.add(newseries);
-			//System.out.println("generate " + newseries);
-		}else if(cond3 == 't'){	
-			
-			newseries = createNewCandidate(rparent, llast);
-			newCandidates.add(newseries);
-			//System.out.println("generate " + newseries);
-		}
-	}
-	
-	
-
 	public void buildCandidateHashTree() {
 		
 		candidateTree.clear();
@@ -310,33 +156,44 @@ public class SequencePatterns {
 	
 	
 	
-	public void checkSupport() {
+	public void checkSupport(boolean withHashTree) {
 
-		ArrayList<Series> candidatesInit = candidateTree.getRoot().getCandidateSeries();
+		ArrayList<Series> candidatesInit;
+		checkTree();
+		checkCandidateTree();
+		if(withHashTree){
+			
+			candidatesInit= candidateTree.getRoot().getCandidateSeries(minSupp);
+			
+		}else {
+
+			candidatesInit= candidateTree.getRoot().getCandidateSeries();
+		}
 		ArrayList<Series> candidatesToCheck = new ArrayList<Series>();
 		Set<String> keys = series.keySet();
 		Series analysedSeries;
 		
+		//System.out.println("ver " + withHashTree + " " + candidatesInit.size());
+		//for (Series series : candidatesInit) {
+		//	System.out.println("to Check:" + series);
+		//}
+		
+		
+		if(candidatesInit == null || candidatesInit.size() ==0){
+			supportedCandidates = new ArrayList<Series>();
+			return;
+		}
+		
 		int size = candidatesInit.get(0).getDataSeq().size();
 		for(Series candidate : candidatesInit){
-			//System.out.println("candidate " + candidate);
-			
+			//candidate.setSupport(0);
 			if(size ==1){
 				candidatesToCheck.add(candidate);
-				//System.out.println("found candidate ");
 			}else {
-				//Series candidateMinusOne = new Series(candidate);
-				//candidateMinusOne.removeLast();
-				//candidatesToCheck.add(candidate);
 				int[] candidateMinusOne = candidate.getItemsOrderedMinusOne();
-				
-				//System.out.println("candidate rem last" + candidateMinusOne);
 				for(Series suppcandidate : supportedCandidates){
-					//System.out.println("suppcandidate " + suppcandidate);
-					int[] suppCandidateMinusOne = suppcandidate.getItemsOrderedMinusOne();
 					if(suppcandidate.shouldCheck(candidateMinusOne)){
 						candidatesToCheck.add(candidate);
-						//System.out.println("found candidate ");
 						break;
 					}
 				}
@@ -345,14 +202,15 @@ public class SequencePatterns {
 		
 		supportedCandidates = new ArrayList<Series>();
 		for (Series candidate : candidatesToCheck) {
-			si =0L;
-			tsi=0L;
-			ts1 =0L;
+			
+			
 			candidateSize =candidate.getDataSeq().size();
 			for (String serriesname : keys) {
 				analysedSeries = series.get(serriesname);
 				dates = analysedSeries.getDatesOrdered();
-				
+				si =0L;
+				tsi=0L;
+				ts1 =0L;
 				for (int i=0 ; i< dates.length ;i++) {
 					l = dates[i];
 					t =l;
@@ -360,7 +218,8 @@ public class SequencePatterns {
 
 						if(tsi==0L){
 							if(si == candidateSize-1){
-								candidate.supportIncr();
+								//candidate.supportIncr();
+								candidate.addSupportedByCheck(analysedSeries.getSeriesName());
 								break;
 							}else {
 								tsi =l;
@@ -369,10 +228,11 @@ public class SequencePatterns {
 							}
 						}else {
 						
-							if(((tsi +maxGap) > t) ){
+							if(((tsi +maxGap) >= t) ){
 								if(((t - ts1) <= timeConstraint)){
 									if(si==candidateSize-1){
-										candidate.supportIncr();
+										//candidate.supportIncr();
+										candidate.addSupportedByCheck(analysedSeries.getSeriesName());
 										break;
 									}else{
 										si++;
@@ -387,7 +247,7 @@ public class SequencePatterns {
 					}
 				}
 			}
-			if(candidate.getSupport()>= minSupp){
+			if(candidate.getSupportByCheck()>= minSupp){
 				supportedCandidates.add(candidate);
 				resultSeries.add(candidate);
 			}
@@ -406,6 +266,14 @@ public class SequencePatterns {
 			return true;
 		}
 		return  false;
+	}
+	
+	public void checkCandidateTree() {
+		Set<String> seriesNames = series.keySet();
+		for (String string : seriesNames) {
+			candidateTree.checkSeries(series.get(string));
+		}
+		
 	}
 	
 	
@@ -465,6 +333,7 @@ public class SequencePatterns {
 
 	public void setMinGap(int minGap) {
 		this.minGap = minGap;
+		
 	}
 
 	public int getMaxGap() {
@@ -473,6 +342,7 @@ public class SequencePatterns {
 
 	public void setMaxGap(int maxGap) {
 		this.maxGap = maxGap;
+		candidateTree.setMaxGap(maxGap);
 	}
 
 	public String getFileName() {
@@ -491,7 +361,19 @@ public class SequencePatterns {
 		this.timeConstraint = timeConstraint;
 	}
 
+	public void checkTree(){
+		candidateTree.checkTree();
+	}
 
+	public int getWindowSize() {
+		return windowSize;
+	}
 
+	public void setWindowSize(int windowSize) {
+		this.windowSize = windowSize;
+		this.candidateTree.setWindowSize(windowSize);
+	}
+
+	
 	
 }

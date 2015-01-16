@@ -62,7 +62,7 @@ public class SequencePatternsTest {
 		System.out.println("\n validateSupport() \n");
 		
 		System.out.println("\n checkSupport() \n");
-		seqPatt.checkSupport();
+		seqPatt.checkSupport(false);
 		System.out.println("\n checkSupport() end\n");
 		
 		ArrayList<Series> supported = seqPatt.getSupportedCandidates();
@@ -97,7 +97,7 @@ public class SequencePatternsTest {
 		System.out.println("\n validateSupport() \n");
 		
 		System.out.println("\n checkSupport() \n");
-		seqPatt.checkSupport();
+		seqPatt.checkSupport(false);
 		System.out.println("\n checkSupport() end\n");
 		
 		ArrayList<Series> supported = seqPatt.getSupportedCandidates();
@@ -132,18 +132,21 @@ public class SequencePatternsTest {
 		
 		
 		System.out.println("\n checkSupport() \n");
-		seqPatt.checkSupport();
+		seqPatt.checkSupport(false);
 		System.out.println("\n checkSupport() end\n");
 		
-		//System.out.println("\n printtree() \n");
-		//seqPatt.getCandidateTree().getRoot().print("");
-		//System.out.println("\n printtree()  end\n");
+		
+		seqPatt.checkTree();
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
 		
 		ArrayList<Series> supported = seqPatt.getSupportedCandidates();
 		System.out.println("suported series:");
 		for (Series series : supported) {
 			System.out.println(series);
 		}
+		
 		
 		System.out.println("\n Level 2 \n");
 		
@@ -160,12 +163,13 @@ public class SequencePatternsTest {
 		seqPatt.buildCandidateHashTree();
 		
 		System.out.println("\n checkSupport() \n");
-		seqPatt.checkSupport();
+		seqPatt.checkSupport(false);
 		System.out.println("\n checkSupport() end\n");
 		
-		//System.out.println("\n printtree2() \n");
-		//seqPatt.getCandidateTree().getRoot().print("");
-		//System.out.println("\n printtree2()  end\n");
+		seqPatt.checkTree();
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
 		
 		children = seqPatt.getCandidateTree().getRoot().getChildren();
 		supported = seqPatt.getSupportedCandidates();
@@ -181,12 +185,13 @@ public class SequencePatternsTest {
 		seqPatt.buildCandidateHashTree();
 		
 		System.out.println("\n checkSupport() \n");
-		seqPatt.checkSupport();
+		seqPatt.checkSupport(false);
 		System.out.println("\n checkSupport() end\n");
 		
-		//System.out.println("\n printtree3() \n");
-		//seqPatt.getCandidateTree().getRoot().print("");
-		//System.out.println("\n printtree3()  end\n");
+		seqPatt.checkTree();
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
 		
 		children = seqPatt.getCandidateTree().getRoot().getChildren();
 		
@@ -204,7 +209,7 @@ public class SequencePatternsTest {
 		seqPatt.buildCandidateHashTree();
 		
 		System.out.println("\n checkSupport() \n");
-		seqPatt.checkSupport();
+		seqPatt.checkSupport(false);
 		System.out.println("\n checkSupport() end\n");
 				
 		children = seqPatt.getCandidateTree().getRoot().getChildren();
@@ -216,12 +221,17 @@ public class SequencePatternsTest {
 		}
 		assertEquals(70, supported.size());
 		
+		seqPatt.checkTree();
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
 		
 		supported = seqPatt.getResultSeries();
 		System.out.println("all  series:");
 		for (Series series : supported) {
 			System.out.println(series);
 		}
+		
 	}
 
 	
@@ -312,9 +322,9 @@ public class SequencePatternsTest {
 			
 			SequencePatterns seqPatt = initSeqPatt("testdata/test3.csv", true);
 			seqPatt.setMaxGap(8);
-			seqPatt.setMinSupp(4);
+			seqPatt.setMinSupp(2);
 			
-			seqPatt.runAlgorithm();
+			seqPatt.runAlgorithm(true);
 			
 			
 			
@@ -329,10 +339,11 @@ public class SequencePatternsTest {
 			 * sequences: 85604
 			 * */
 			
+			seqPatt.getSeries();
 			
-			//for (Series series : result) {
-			//	System.out.println(series);
-			//}
+			for (Series s : seqPatt.getResultSeries() ) {
+			//	System.out.println(s);
+			}
 	}
 	
 	
@@ -441,66 +452,7 @@ public class SequencePatternsTest {
 		
 	}
 	
-	/*
-	@Test
-	public void testRemovingFirstFromItemSet(){
-		
-		Series s = new Series();
-		ItemSet itemSet = new ItemSet(0);
-		s.addItemSet(1L, itemSet);
-		itemSet = new ItemSet();
-		int[] list = new int[2];
-		list[0] =3;
-		list[1] =1;
-		itemSet.setItems(list);
-		s.addItemSet(0L, itemSet);
-		
-		ArrayList<Series> newseries = s.getSeriesByRemovingFirst();
-		
-		assertEquals(2, newseries.size());
-		assertEquals(3, newseries.get(0).getDataSeq().get(1L).getItems()[0]);
-		assertEquals(1, newseries.get(1).getDataSeq().get(1L).getItems()[0]);
-		
-		list = new int[3];
-		list[0] =3;
-		list[1] =1;
-		list[2] =7;
-		itemSet.setItems(list);
-		s.addItemSet(0L, itemSet);
-		newseries = s.getSeriesByRemovingFirst();
-		assertEquals(3, newseries.size());
-		assertEquals(3, newseries.get(0).getDataSeq().get(1L).getItems()[0]);
-		assertEquals(7, newseries.get(0).getDataSeq().get(1L).getItems()[1]);
-		
-		assertEquals(1, newseries.get(1).getDataSeq().get(1L).getItems()[0]);
-		assertEquals(7, newseries.get(1).getDataSeq().get(1L).getItems()[1]);
-		
-		assertEquals(1, newseries.get(2).getDataSeq().get(1L).getItems()[0]);
-		assertEquals(3, newseries.get(2).getDataSeq().get(1L).getItems()[1]);
-		
-		s = new Series();
-		list = new int[3];
-		list[0] =3;
-		list[1] =1;
-		list[2] =7;
-		itemSet.setItems(list);
-		s.addItemSet(0L, itemSet);
-		
-		newseries = s.getSeriesByRemovingFirst();
-		assertEquals(3, newseries.size());
-		assertEquals(3, newseries.get(0).getDataSeq().get(0L).getItems()[0]);
-		assertEquals(7, newseries.get(0).getDataSeq().get(0L).getItems()[1]);
-		
-		assertEquals(1, newseries.get(1).getDataSeq().get(0L).getItems()[0]);
-		assertEquals(7, newseries.get(1).getDataSeq().get(0L).getItems()[1]);
-		
-		assertEquals(1, newseries.get(2).getDataSeq().get(0L).getItems()[0]);
-		assertEquals(3, newseries.get(2).getDataSeq().get(0L).getItems()[1]);
-		
-		//
-	}
 	
-	*/
 	@Test
 	public void seriesEqualsTest(){
 		
@@ -1295,5 +1247,150 @@ public class SequencePatternsTest {
 		assertEquals(null, serieslist);
 		System.out.println(s3);
 
+	}
+	
+	@Test
+	public void checkHashTree(){
+		
+		Series s1 = new Series();
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[2];
+		list[0] =1;
+		list[1] =2;
+		itemSet.setItems(list);
+		s1.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[3];
+		list[0] =3;
+		list[1] =4;
+		list[2] =5;
+		itemSet.setItems(list);
+		s1.addItemSet(1L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =6;
+		itemSet.setItems(list);
+		s1.addItemSet(2L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =7;
+		itemSet.setItems(list);
+		s1.addItemSet(3L, itemSet);
+			
+		Series s2 = new Series();
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =0;
+		list[1] =2;
+		itemSet.setItems(list);
+		s2.addItemSet(0L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =1;
+		itemSet.setItems(list);
+		s2.addItemSet(1L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =2;
+		itemSet.setItems(list);
+		s2.addItemSet(2L, itemSet);
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =4;
+		itemSet.setItems(list);
+		s2.addItemSet(3L, itemSet);
+		
+		HashMap<String, Series>  testSeries = new HashMap<String, Series>();
+		s1.setSeriesName("A");
+		testSeries.put("A", s1);
+		
+		HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
+		dictionary.put(0, "A");
+		dictionary.put(1, "B");
+		dictionary.put(2, "C");
+		dictionary.put(3, "D");
+		dictionary.put(4, "E");
+		dictionary.put(5, "F");
+		dictionary.put(6, "G");
+		dictionary.put(7, "H");
+		
+		SequencePatterns seqPatt = new SequencePatterns("");
+		testSeries.put("A", s1);
+		seqPatt.setSeries(testSeries);
+		seqPatt.setMinSupp(1);
+		seqPatt.setDictionary(dictionary);
+		seqPatt.setMinGap(0);
+		seqPatt.setMaxGap(1);//6
+		
+		seqPatt.generateCandidates();
+		seqPatt.buildCandidateHashTree();
+		seqPatt.checkTree();
+		seqPatt.checkCandidateTree();
+		seqPatt.checkSupport(true);
+		
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
+				
+		
+		ArrayList<Series> supported =seqPatt.getSupportedCandidates();
+		  
+		assertEquals(7, supported.size());
+		
+		
+		
+		System.out.println("Stage 2:");
+		s2.setSeriesName("B");
+		testSeries.put("B", s2);
+		seqPatt = new SequencePatterns("");
+		seqPatt.setSeries(testSeries);
+		seqPatt.setMinSupp(2);
+		seqPatt.setDictionary(dictionary);
+		seqPatt.setMinGap(0);
+		seqPatt.setMaxGap(1);//6
+		
+		
+		seqPatt.generateCandidates();
+		seqPatt.buildCandidateHashTree();
+		seqPatt.checkTree();
+		seqPatt.checkSupport(true);	
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
+		seqPatt.checkCandidateTree();	
+		
+			
+		supported =seqPatt.getSupportedCandidates();
+		assertEquals(3, supported.size());	
+		
+		System.out.println("suported series:");
+		for (Series series : supported) {
+			System.out.println(series);
+		}
+		
+		
+		seqPatt.generateCandidates();
+		seqPatt.buildCandidateHashTree();
+		seqPatt.checkSupport(true);	
+		System.out.println("\n printtree() \n");
+		seqPatt.getCandidateTree().getRoot().print("");
+		System.out.println("\n printtree()  end\n");
+		seqPatt.checkCandidateTree();	
+		
+			
+		supported =seqPatt.getSupportedCandidates();
+		//assertEquals(3, supported.size());	
+		
+		System.out.println("suported series:");
+		for (Series series : supported) {
+			System.out.println(series);
+		}
+		
 	}
 }

@@ -8,7 +8,6 @@ public class InteriorNode extends Node{
 
 	private HashMap<Integer, Node> children;
 	
-	
 	public InteriorNode(int hash, int threshold){
 		super(hash, threshold);
 		children = new HashMap<Integer, Node>();
@@ -57,7 +56,7 @@ public class InteriorNode extends Node{
 	
 	public void print(String offset){
 		
-		System.out.println(offset + "InteriorNode level: " + getLevel());
+		System.out.println(offset + "InteriorNode level: " + getLevel() + " check: " + this.isCheck() + " hashes " + this.toCheckToString());
 		for(int i=0; i<children.size();i++){
 			System.out.println(offset + "|- child (hash):" + i);
 			children.get(i).print(offset + "  ");
@@ -66,6 +65,18 @@ public class InteriorNode extends Node{
 	}
 	
 
+	public ArrayList<Series> getCandidateSeries(int minSupp){
+		ArrayList<Series> all = new ArrayList<Series>();
+		
+		Set<Integer> keys = children.keySet();
+		
+		for (Integer key : keys) {
+			all.addAll(children.get(key).getCandidateSeries(minSupp));
+		}
+		
+		return all;
+	}
+	
 	public ArrayList<Series> getCandidateSeries(){
 		ArrayList<Series> all = new ArrayList<Series>();
 		
@@ -76,6 +87,20 @@ public class InteriorNode extends Node{
 		}
 		
 		return all;
+	}
+
+	@Override
+	public boolean checkNode() {
+		Set<Integer> keys = children.keySet();
+		boolean[] hashes =  new boolean[this.getHash()];
+		for (Integer key : keys) {
+			if(children.get(key).checkNode()){
+				hashes[key] = true;
+			}
+		}
+		this.setCheck(true);
+		this.setHashesToCheck(hashes);
+		return true;
 	}
 
 	
