@@ -1,37 +1,22 @@
 package pl.pw.elka.gsp.algorithm;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
+import java.lang.Boolean;
 
 public class GSP {
 	
-	//INIT ARGUMENTS:
-	//[minSup] [minGap] [maxGap] [windowSize] [data file number]
-	//Available data file numbers: 1, 2, 3
 	public static void main(String[] args) {
 		
-		int[] arguments = null;
-		if (args.length == 5) {
-			arguments = new int[5];
-			for(int i=0 ; i < 5 ; i++) {
-			    try {
-			    	arguments[i] = Integer.parseInt(args[i]);
-			    } catch (NumberFormatException e) {
-			        System.err.println("Argument "+i+". in row:" + args[i] + " must be an integer.");
-			        printErrorMsg();
-			        System.exit(1);
-			    }
-			}
-		}
-		else {
-			printErrorMsg();
-			System.exit(1);
-		}
-		
+		GSPparameters params = getParameters();
 		SequencePatterns seqPatt = null;
 		try {
-			seqPatt = initSeqPatt(arguments, true);
+			seqPatt = initSeqPatt(params);
 		} catch (ParseException e) {
 			System.out.println("Parse exception thrown!");
 			e.printStackTrace();
@@ -39,41 +24,62 @@ public class GSP {
 		findSequences(seqPatt);
 	}
 
-	private static SequencePatterns initSeqPatt(int[] arguments, boolean hierarchy) throws ParseException {
+	private static SequencePatterns initSeqPatt(GSPparameters params) throws ParseException {
+		
 		CSVReader reader = new CSVReader();
-		String path = getDataFileString(arguments[4]);
-		HashMap<String, Series>  testSeries = reader.read(path, null, hierarchy);
+		String path = params.dataFilePath;
+		HashMap<String, Series>  testSeries = reader.read(path, null, params.useTaxonomies);
 		
 				
 		SequencePatterns seqPatt = new SequencePatterns(path);
 		seqPatt.setSeries(testSeries);
-		seqPatt.setMinSupp(arguments[0]);
+		seqPatt.setMinSupp(params.minSupport);
 		seqPatt.setDictionary(reader.getDictionary());
-		seqPatt.setMinGap(arguments[1]);
-		seqPatt.setMaxGap(arguments[2]);
-		//seqPatt.setWindowSize(arguments[3]);
+		seqPatt.setMinGap(params.minGap);
+		seqPatt.setMaxGap(params.maxGap);
+		seqPatt.setWindowSize(params.slidingWindowSize);
+		seqPatt.setTimeConstraint(params.timeConstraint);
+		seqPatt.setWithHashTree(params.useHashTree);
 		
 		return seqPatt;
 	}
 	
 	private static void findSequences(SequencePatterns seqPatt) {
 		
-		seqPatt.runAlgorithm(true);
+		seqPatt.runAlgorithm();
 		ArrayList<Series> result = seqPatt.getResultSeries();
 		seqPatt.getSeries();
 		
-//		for (Series s : seqPatt.getResultSeries() ) {
-//			System.out.println(s);
-//		}
-	}
-
-	private static String getDataFileString(int dataFileNum) {
-		return "testdata/test"+dataFileNum+".csv";
 	}
 	
-	private static void printErrorMsg() {
-		System.err.println("Wrong arguments number! Please give five arguments in following order:");
-		System.err.println("[minSup] [minGap] [maxGap] [windowSize] [data file number]");
-		System.err.println("Available data file numbers: 1, 2, 3 ");
+	public static GSPparameters getParameters() {
+		GSPparameters params = new GSPparameters();
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+	 		input = new FileInputStream("config.properties");
+			prop.load(input);
+	 
+			params.useHashTree = Boolean.parseBoolean(prop.getProperty("useHashTree"));
+			params.useTaxonomies = Boolean.parseBoolean(prop.getProperty("useTaxonomies"));
+			params.slidingWindowSize = Short.parseShort(prop.getProperty("slidingWindowSize"));
+			params.minSupport = Short.parseShort(prop.getProperty("minSupport"));
+			params.minGap = Short.parseShort(prop.getProperty("minGap"));
+			params.maxGap = Short.parseShort(prop.getProperty("maxGap"));
+			params.timeConstraint = Short.parseShort(prop.getProperty("timeConstraint"));
+			params.dataFilePath = prop.getProperty("dataFilePath");
+			
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return params;
 	}
 }

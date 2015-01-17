@@ -14,6 +14,7 @@ public class SequencePatterns {
 	private HashMap<String, Series> series, candidates;
 	private HashMap<Integer,String> dictionary;
 	private CandidateHashTree candidateTree;
+	private boolean withHashTree;
 	private int minSupp;
 	private int timeConstraint = 365;
 	private int treeLevel;
@@ -45,7 +46,7 @@ public class SequencePatterns {
 		series = csvReader.read(fileName,dateFormat, hierarchy);
 	}
 	
-	public void runAlgorithm(boolean withHashTree){
+	public void runAlgorithm(){
 		int i=1, cnt=0;
 		long startTime = System.currentTimeMillis();
 		do {
@@ -75,6 +76,14 @@ public class SequencePatterns {
 	}
 	
 	
+	public boolean isWithHashTree() {
+		return withHashTree;
+	}
+
+	public void setWithHashTree(boolean withHashTree) {
+		this.withHashTree = withHashTree;
+	}
+
 	public int getMinSupp() {
 		return minSupp;
 	}
