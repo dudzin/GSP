@@ -66,9 +66,11 @@ public class SequencePatterns {
 			System.out.println("ver " + withHashTree + " " + resultSeries.size());
 		} while (supportedCandidates.size() !=0);
 		long endTime = System.currentTimeMillis();
-		System.out.println();
+		System.out.println(); System.out.println();
 		
 		double candidate_sequenceRatio = confirmedSequencesNum/generatedCandidatesNum;
+		double execTime = endTime - startTime;
+		double timePerConfirmedSeq = execTime/confirmedSequencesNum;
 	
 		System.out.println("SUMMARY");
 		System.out.println();
@@ -81,10 +83,13 @@ public class SequencePatterns {
 		System.out.println("widnowSize: " + windowSize);
 		System.out.println();
 		System.out.println("Execution info:");
-		System.out.println("execTime: " + (endTime - startTime) + "ms");
+		System.out.println("execTime: " + ((int)execTime) + "ms");
 		System.out.println("Pattern Sequence found: " + resultSeries.size());
 		System.out.println("Longest: " + (treeLevel-1));
-		System.out.println("[Confirmed Sequences/Generated Candidates] Ratio: "+candidate_sequenceRatio);
+		System.out.println();
+		System.out.println("Performance indicators:");
+		System.out.println("Ratio [Confirmed Sequences/Generated Candidates]: " + candidate_sequenceRatio);
+		System.out.println("Exec time per confirmed sequence: " + timePerConfirmedSeq + "ms");
 		System.out.println();
 	}
 	
@@ -135,9 +140,6 @@ public class SequencePatterns {
 			 ser.setDataSeq(dataSeq);
 			 candidates.put(""+key, ser);
 		 }
-		
-		 
-
 	}
 	
 	private void fillCandidates(ArrayList<Series> newCandidates2) {

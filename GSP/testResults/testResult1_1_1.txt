@@ -1,0 +1,34 @@
+SEQUENCE SEARCH REPORT:
+
+Step: 1
+generated candidates :39
+confirmed sequences  :1
+ver false 1
+Step: 2
+generated candidates :1
+confirmed sequences  :0
+ver false 1
+
+
+SUMMARY
+
+Parameters:
+file:       testdata/test4.csv
+minSupp:    2
+minGap:     28
+maxGap:     49
+timeConstr: 365
+widnowSize: 2
+
+Execution info:
+execTime: 37ms
+Pattern Sequence found: 1
+Longest: 1
+
+Performance indicators:
+Ratio [Confirmed Sequences/Generated Candidates]: 0.025
+Exec time per confirmed sequence: 37.0ms
+
+RESULT SERIES:
+
+ series :0:[3]  supp: 2 by Hash: [AA, AXP] by check:[AA, AXP]

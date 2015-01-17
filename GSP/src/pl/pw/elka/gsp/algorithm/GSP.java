@@ -7,13 +7,15 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Scanner;
 import java.lang.Boolean;
 
 public class GSP {
 	
 	public static void main(String[] args) {
 		
-		GSPparameters params = getParameters();
+		String configFileName = setConfigFileName(args);
+		GSPparameters params = getParameters(configFileName);
 		SequencePatterns seqPatt = null;
 		try {
 			seqPatt = initSeqPatt(params);
@@ -25,12 +27,29 @@ public class GSP {
 		printResultSeries(seqPatt);
 	}
 	
-	public static GSPparameters getParameters() {
+	private static String setConfigFileName(String[] args) {
+		
+		String configFileName = null;
+		if (args.length == 1) {
+			try {
+				configFileName = args[0];
+			} catch (NumberFormatException e) {
+				System.err.println("Bad input argument format. Taking default config file: \"config.properties\" ");
+				configFileName = "config.properties";
+			}
+		}
+		else {
+			configFileName = "config.properties";
+		}
+		return configFileName;
+	}
+
+	public static GSPparameters getParameters(String configFileName) {
 		GSPparameters params = new GSPparameters();
 		Properties prop = new Properties();
 		InputStream input = null;
 		try {
-	 		input = new FileInputStream("config.properties");
+	 		input = new FileInputStream(configFileName);
 			prop.load(input);
 	 
 			params.useHashTree = Boolean.parseBoolean(prop.getProperty("useHashTree"));
