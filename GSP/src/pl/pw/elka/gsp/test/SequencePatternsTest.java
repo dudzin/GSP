@@ -15,6 +15,7 @@ import pl.pw.elka.gsp.algorithm.CSVReader;
 import pl.pw.elka.gsp.algorithm.CandidateHashTree;
 import pl.pw.elka.gsp.algorithm.InteriorNode;
 import pl.pw.elka.gsp.algorithm.ItemSet;
+import pl.pw.elka.gsp.algorithm.ItemSetWithWindow;
 import pl.pw.elka.gsp.algorithm.Leaf;
 import pl.pw.elka.gsp.algorithm.Node;
 import pl.pw.elka.gsp.algorithm.SequencePatterns;
@@ -320,12 +321,12 @@ public class SequencePatternsTest {
 			System.out.println("\n runTest() \n");
 			
 			
-			SequencePatterns seqPatt = initSeqPatt("testdata/test3.csv", true);
-			seqPatt.setMaxGap(8);
+			SequencePatterns seqPatt = initSeqPatt("testdata/test4.csv", true); //taxonomies
+			seqPatt.setMaxGap(49);
+			seqPatt.setMinGap(28);
 			seqPatt.setMinSupp(2);
-			
-			seqPatt.runAlgorithm(true);
-			
+			seqPatt.setWindowSize(2);
+			seqPatt.runAlgorithm(false);// use hash tree
 			
 			
 			ArrayList<Series> result = seqPatt.getResultSeries();
@@ -342,7 +343,12 @@ public class SequencePatternsTest {
 			seqPatt.getSeries();
 			
 			for (Series s : seqPatt.getResultSeries() ) {
-			//	System.out.println(s);
+				System.out.println(s);
+			}
+			
+			Set<String> keys = seqPatt.getSeries().keySet();
+			for (String k : keys  ) {
+				System.out.println(seqPatt.getSeries().get(k));
 			}
 	}
 	
@@ -1392,5 +1398,91 @@ public class SequencePatternsTest {
 			System.out.println(series);
 		}
 		
+	}
+	
+	
+	@Test 
+	public void itemSetWithWindowTest() throws ParseException{
+		
+		System.out.println("\n itemSetWithWindowTest() \n");
+		
+		
+		SequencePatterns seqPatt = initSeqPatt("testdata/test3.csv", true);
+		seqPatt.setMaxGap(8);
+		seqPatt.setMinSupp(2);
+		seqPatt.setWindowSize(8);
+		
+		Series s1 = seqPatt.getSeries().get("AA");
+		System.out.println(s1);
+		
+		
+		long[] dates = s1.getDatesOrdered();
+		long t = 0;
+		long windowsize = 8;
+		
+		ArrayList<Long> datesToCheck = new ArrayList<Long>();
+		
+		for (Long date : dates) {
+			if(date >= (t-windowsize) && date <= (t+windowsize) ){
+				datesToCheck.add(date);
+			}
+		}
+		
+		assertEquals(0, datesToCheck.size());
+				
+		t = 15001;
+		windowsize = 8;
+		
+		datesToCheck = new ArrayList<Long>();
+		
+		for (Long date : dates) {
+			if(date >= (t-windowsize) && date <= (t+windowsize) ){
+				datesToCheck.add(date);
+			}
+		}
+		
+		assertEquals(2, datesToCheck.size());
+				
+		HashMap<Long, ItemSet> itemSetsToCheck = new HashMap<Long, ItemSet>();
+		for (Long date : datesToCheck) {
+			itemSetsToCheck.put(date, s1.getDataSeq().get(date));
+		}
+		
+		ItemSet itemSet = new ItemSet();
+		int[] list = new int[2];
+		list[0] =17;
+		list[1] =18;
+		itemSet.setItems(list);
+		
+		
+		ItemSetWithWindow isWW = new ItemSetWithWindow(itemSetsToCheck);
+		System.out.println("check " + itemSet);
+		assertTrue(isWW.contains(itemSet));
+		assertEquals(15008, isWW.getMinDate(itemSet));
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =17;
+		list[1] =27;
+		itemSet.setItems(list);
+		System.out.println("check " + itemSet);
+		assertFalse(isWW.contains(itemSet));
+		assertEquals(15008, isWW.getMinDate(itemSet));
+		
+		itemSet = new ItemSet();
+		list = new int[2];
+		list[0] =0;
+		list[1] =17;
+		itemSet.setItems(list);
+		System.out.println("check " + itemSet);
+		assertTrue(isWW.contains(itemSet));
+		assertEquals(15001, isWW.getMinDate(itemSet));
+		
+		itemSet = new ItemSet();
+		list = new int[1];
+		list[0] =27;
+		itemSet.setItems(list);
+		System.out.println("check " + itemSet);
+		assertFalse(isWW.contains(itemSet));
 	}
 }
