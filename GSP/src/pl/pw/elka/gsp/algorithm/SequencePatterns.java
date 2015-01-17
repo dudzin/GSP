@@ -48,15 +48,19 @@ public class SequencePatterns {
 	
 	public void runAlgorithm(){
 		int i=1, cnt=0;
+		double generatedCandidatesNum = 0, confirmedSequencesNum = 0;
 		System.out.println("SEQUENCE SEARCH REPORT:");
+		System.out.println();
 		long startTime = System.currentTimeMillis();
 		do {
 			generateCandidates();
 			System.out.println("Step: " + i);
 			System.out.println("generated candidates :" + candidates.size());
+			generatedCandidatesNum += candidates.size();
 			buildCandidateHashTree();
 			checkSupport(withHashTree);
 			System.out.println("confirmed sequences  :" + (resultSeries.size()- cnt));
+			confirmedSequencesNum += (resultSeries.size()- cnt);
 			cnt =  resultSeries.size();
 			i++; 
 			System.out.println("ver " + withHashTree + " " + resultSeries.size());
@@ -64,17 +68,23 @@ public class SequencePatterns {
 		long endTime = System.currentTimeMillis();
 		System.out.println();
 		
-		
-		System.out.println("SUMMARY:");
-		System.out.println("execTime: " + (endTime - startTime) + "ms");
+		double candidate_sequenceRatio = confirmedSequencesNum/generatedCandidatesNum;
+	
+		System.out.println("SUMMARY");
+		System.out.println();
+		System.out.println("Parameters:");
 		System.out.println("file:       " + fileName);
 		System.out.println("minSupp:    " + minSupp);
 		System.out.println("minGap:     " + minGap);
 		System.out.println("maxGap:     " + maxGap);
 		System.out.println("timeConstr: " + timeConstraint);
 		System.out.println("widnowSize: " + windowSize);
+		System.out.println();
+		System.out.println("Execution info:");
+		System.out.println("execTime: " + (endTime - startTime) + "ms");
 		System.out.println("Pattern Sequence found: " + resultSeries.size());
 		System.out.println("Longest: " + (treeLevel-1));
+		System.out.println("[Confirmed Sequences/Generated Candidates] Ratio: "+candidate_sequenceRatio);
 		System.out.println();
 	}
 	

@@ -87,6 +87,7 @@ public class GSP {
 	private static void printResultSeries(SequencePatterns seqPatt) {
 		
 		System.out.println("RESULT SERIES:");
+		System.out.println();
 		for (Series s : seqPatt.getResultSeries() ) {
 			System.out.println(s);
 		}
