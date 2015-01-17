@@ -48,6 +48,7 @@ public class SequencePatterns {
 	
 	public void runAlgorithm(){
 		int i=1, cnt=0;
+		System.out.println("SEQUENCE SEARCH REPORT:");
 		long startTime = System.currentTimeMillis();
 		do {
 			generateCandidates();
@@ -61,9 +62,10 @@ public class SequencePatterns {
 			System.out.println("ver " + withHashTree + " " + resultSeries.size());
 		} while (supportedCandidates.size() !=0);
 		long endTime = System.currentTimeMillis();
+		System.out.println();
 		
 		
-		System.out.println("Summary:");
+		System.out.println("SUMMARY:");
 		System.out.println("execTime: " + (endTime - startTime) + "ms");
 		System.out.println("file:       " + fileName);
 		System.out.println("minSupp:    " + minSupp);
@@ -73,6 +75,7 @@ public class SequencePatterns {
 		System.out.println("widnowSize: " + windowSize);
 		System.out.println("Pattern Sequence found: " + resultSeries.size());
 		System.out.println("Longest: " + (treeLevel-1));
+		System.out.println();
 	}
 	
 	

@@ -22,34 +22,7 @@ public class GSP {
 			e.printStackTrace();
 		}
 		findSequences(seqPatt);
-	}
-
-	private static SequencePatterns initSeqPatt(GSPparameters params) throws ParseException {
-		
-		CSVReader reader = new CSVReader();
-		String path = params.dataFilePath;
-		HashMap<String, Series>  testSeries = reader.read(path, null, params.useTaxonomies);
-		
-				
-		SequencePatterns seqPatt = new SequencePatterns(path);
-		seqPatt.setSeries(testSeries);
-		seqPatt.setMinSupp(params.minSupport);
-		seqPatt.setDictionary(reader.getDictionary());
-		seqPatt.setMinGap(params.minGap);
-		seqPatt.setMaxGap(params.maxGap);
-		seqPatt.setWindowSize(params.slidingWindowSize);
-		seqPatt.setTimeConstraint(params.timeConstraint);
-		seqPatt.setWithHashTree(params.useHashTree);
-		
-		return seqPatt;
-	}
-	
-	private static void findSequences(SequencePatterns seqPatt) {
-		
-		seqPatt.runAlgorithm();
-		ArrayList<Series> result = seqPatt.getResultSeries();
-		seqPatt.getSeries();
-		
+		printResultSeries(seqPatt);
 	}
 	
 	public static GSPparameters getParameters() {
@@ -81,5 +54,41 @@ public class GSP {
 			}
 		}
 		return params;
+	}
+
+	private static SequencePatterns initSeqPatt(GSPparameters params) throws ParseException {
+		
+		CSVReader reader = new CSVReader();
+		String path = params.dataFilePath;
+		HashMap<String, Series>  testSeries = reader.read(path, null, params.useTaxonomies);
+		
+				
+		SequencePatterns seqPatt = new SequencePatterns(path);
+		seqPatt.setSeries(testSeries);
+		seqPatt.setMinSupp(params.minSupport);
+		seqPatt.setDictionary(reader.getDictionary());
+		seqPatt.setMinGap(params.minGap);
+		seqPatt.setMaxGap(params.maxGap);
+		seqPatt.setWindowSize(params.slidingWindowSize);
+		seqPatt.setTimeConstraint(params.timeConstraint);
+		seqPatt.setWithHashTree(params.useHashTree);
+		
+		return seqPatt;
+	}
+	
+	private static void findSequences(SequencePatterns seqPatt) {
+		
+		seqPatt.runAlgorithm();
+		ArrayList<Series> result = seqPatt.getResultSeries();
+		seqPatt.getSeries();
+		
+	}
+	
+	private static void printResultSeries(SequencePatterns seqPatt) {
+		
+		System.out.println("RESULT SERIES:");
+		for (Series s : seqPatt.getResultSeries() ) {
+			System.out.println(s);
+		}
 	}
 }
