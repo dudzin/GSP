@@ -326,7 +326,8 @@ public class SequencePatternsTest {
 			seqPatt.setMinGap(28);
 			seqPatt.setMinSupp(2);
 			seqPatt.setWindowSize(2);
-			seqPatt.runAlgorithm(false);// use hash tree
+			seqPatt.setWithHashTree(false);
+			seqPatt.runAlgorithm();// use hash tree
 			
 			
 			ArrayList<Series> result = seqPatt.getResultSeries();
