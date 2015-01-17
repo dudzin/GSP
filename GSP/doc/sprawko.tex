@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[compact]{titlesec}
+\titleformat*{\section}{\Large\bfseries}
+\titleformat*{\subsection}{\large\bfseries}
+\titleformat*{\subsubsection}{\normalsize\bfseries}
+\titlespacing{\section}{-15pt}{*5}{*3}
+\titlespacing{\subsection}{0pt}{*3}{*1.5}
+\titlespacing{\subsubsection}{8pt}{*2}{*1}
+\setlength{\parskip}{0cm}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+	
+% jezyk i czcionki polskie
+\usepackage{polski}
+\usepackage[utf8x]{inputenc}
+% zmiana wygladu naglowkow sekcji
+	%\usepackage{sectsty} 
+	%\sectionfont{\large}
+%ustawienie marginesĂłw
+\usepackage{anysize}
+\marginsize{3cm}{3cm}{0.5cm}{1cm}
+%inne pakiety
+\usepackage{graphicx} %grafiki
+\usepackage{color}
+\usepackage{amsmath} % matematyka
+\usepackage{amssymb} % symbole, np. triangleeq
+\usepackage{float}
+\usepackage{indentfirst}
+
+\title{ \textbf{Metody eksploracji danych - projekt} \\ \Large Dokumentacja}
+\author{Przemysław Barcikowski, Dariusz Dudziński}
+
+\begin{document}
+\maketitle
+\section{Zadanie}
+\subsection{Temat}
+\paragraph{} Wyszukiwanie uogolnionych wzorcow sekwencyjnych (Generalized Sequential Patterns)
+\subsection{Cel projektu}
+\paragraph{} Celem niniejszego projektu jest stworzenie aplikacji spełniającej poniższe wymagania:
+\begin{enumerate}
+\item Aplikacja służy do badania sekwencyjnych reguł asocjacyjnych na podstawie danych z giełdy,
+\item Aplikacja operuje na csv, gdzie np pierwsza kolumna to nazwa serii, druga to data. Kolejne atrybuty będą wykorzystywane do samego wyliczania sekwencji. Powinny to być wartości liczbowe,
+\item Aplikacja automatycznie buduje taksonomię na atrybutach liczbowych w postaci
+\begin{itemize}
+\item zaokrąglenie do pełnej wartości,
+\item wartość dodatnia/ujemna.
+\end{itemize}
+\item Aplikacja operuje z zadanym przez użytkownika oknem czasowym (sliding window), ograniczeniami czasowymi (min i max różnica między wystąpieniami w serii) i minimalnym wsparciem
+\item Aplikacja generuje sekwencyjne reguły asocjacyjne,
+\item Napisana w języku Java,
+\item Badanie będzie miało na celu odnalezienie reguł z danych.
+\end{enumerate}
+
+\section{Rozwiązanie}
+\label{sec:rozwiazanie}
+Do rozwiązania wyżej postawionego problemu został wykorzystany algorytm Generalized Sequential Patterns (GSP) \cite{bib:GSP}. Jako dane do testowania oraz eksperymentów wybrano notowania giełdowe indeksu Dow Jones, pobrane ze strony \cite{bib:DowJones}.
+
+\section{Założenia programu}
+
+\subsection{Funkcjonalności aplikacji}
+\subsection{Konfiguracja parametrów programu}
+\subsection{Wybrana technologia i wydajność}
+
+\section{Implementacja}
+
+\section{Testy}
+
+\section{Eksperymenty i wyniki}
+\nocite{*}
+\bibliography{bibl}
+\bibliographystyle{plain}
+
+\end{document}
