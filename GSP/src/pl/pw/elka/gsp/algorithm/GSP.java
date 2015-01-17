@@ -39,14 +39,14 @@ public class GSP {
 		seqPatt.setMaxGap(params.maxGap);
 		seqPatt.setWindowSize(params.slidingWindowSize);
 		seqPatt.setTimeConstraint(params.timeConstraint);
-		seqPatt.setWithHashTree(params.useHashTree);
+//		seqPatt.setWithHashTree(params.useHashTree);
 		
 		return seqPatt;
 	}
 	
 	private static void findSequences(SequencePatterns seqPatt) {
 		
-		seqPatt.runAlgorithm();
+//		seqPatt.runAlgorithm();
 		ArrayList<Series> result = seqPatt.getResultSeries();
 		seqPatt.getSeries();
 		

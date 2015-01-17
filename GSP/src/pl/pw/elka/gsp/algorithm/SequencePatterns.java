@@ -1,5 +1,7 @@
 package pl.pw.elka.gsp.algorithm;
 
+import static org.junit.Assert.assertTrue;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,7 +14,6 @@ public class SequencePatterns {
 	private HashMap<String, Series> series, candidates;
 	private HashMap<Integer,String> dictionary;
 	private CandidateHashTree candidateTree;
-	private boolean withHashTree;
 	private int minSupp;
 	private int timeConstraint = 365;
 	private int treeLevel;
@@ -27,7 +28,7 @@ public class SequencePatterns {
 	
 	private int candidateSize;
 	private long lsearched;
-	private Long si =0L, tsi=0L, ts1 =0L;
+	private Long si =0L, tsi=0L, ts1 =0L, tsimax =0L, tmin =0L;
 	private long[] dates ;
 	private long t,l;
 	private int windowSize;
@@ -44,7 +45,7 @@ public class SequencePatterns {
 		series = csvReader.read(fileName,dateFormat, hierarchy);
 	}
 	
-	public void runAlgorithm(){
+	public void runAlgorithm(boolean withHashTree){
 		int i=1, cnt=0;
 		long startTime = System.currentTimeMillis();
 		do {
@@ -63,23 +64,17 @@ public class SequencePatterns {
 		
 		System.out.println("Summary:");
 		System.out.println("execTime: " + (endTime - startTime) + "ms");
-		System.out.println("file:     " + fileName);
-		System.out.println("minSupp:  " + minSupp);
-		System.out.println("minGap:   " + minGap);
-		System.out.println("maxGap:   " + maxGap);
+		System.out.println("file:       " + fileName);
+		System.out.println("minSupp:    " + minSupp);
+		System.out.println("minGap:     " + minGap);
+		System.out.println("maxGap:     " + maxGap);
+		System.out.println("timeConstr: " + timeConstraint);
+		System.out.println("widnowSize: " + windowSize);
 		System.out.println("Pattern Sequence found: " + resultSeries.size());
 		System.out.println("Longest: " + (treeLevel-1));
 	}
 	
 	
-	public boolean isWithHashTree() {
-		return withHashTree;
-	}
-
-	public void setWithHashTree(boolean withHashTree) {
-		this.withHashTree = withHashTree;
-	}
-
 	public int getMinSupp() {
 		return minSupp;
 	}
@@ -179,7 +174,7 @@ public class SequencePatterns {
 			candidatesInit= candidateTree.getRoot().getCandidateSeries();
 		}
 		ArrayList<Series> candidatesToCheck = new ArrayList<Series>();
-		Set<String> keys = series.keySet();
+		
 		Series analysedSeries;
 		
 		//System.out.println("ver " + withHashTree + " " + candidatesInit.size());
@@ -208,42 +203,81 @@ public class SequencePatterns {
 				}
 			}
 		}		
-		
+		Set<String> keys = series.keySet();
 		supportedCandidates = new ArrayList<Series>();
 		for (Series candidate : candidatesToCheck) {
 			
-			
 			candidateSize =candidate.getDataSeq().size();
+			if(withHashTree){
+				keys = candidate.getsupportedByHash();
+			}
 			for (String serriesname : keys) {
 				analysedSeries = series.get(serriesname);
 				dates = analysedSeries.getDatesOrdered();
 				si =0L;
 				tsi=0L;
 				ts1 =0L;
+				tsimax = 0L;
+				tmin = 0L;
+						
 				for (int i=0 ; i< dates.length ;i++) {
 					l = dates[i];
 					t =l;
-					if(analysedSeries.getDataSeq().get(l).contains(candidate.getDataSeq().get(si))){
-
+					/*if(tsi != 0L){
+						while(l < tsi+ minGap){
+							i++;
+							l = dates[i];
+						}
+					}*/
+					//{}
+					ArrayList<Long> datesToCheck = new ArrayList<Long>();
+					
+					for (Long date : dates) {
+						if(date >= (t-windowSize) && date <= (t+windowSize) ){
+							datesToCheck.add(date);
+						}
+					}
+					HashMap<Long, ItemSet> itemSetsToCheck = new HashMap<Long, ItemSet>();
+					for (Long date : datesToCheck) {
+						itemSetsToCheck.put(date, analysedSeries.getDataSeq().get(date));
+					}
+					
+					ItemSetWithWindow isWW = new ItemSetWithWindow(itemSetsToCheck);
+					ItemSet isCheck = candidate.getDataSeq().get(si);
+					//System.out.println("check " + itemSet);
+					if((isWW.contains(isCheck))){
+					//if(analysedSeries.getDataSeq().get(l).contains(candidate.getDataSeq().get(si))){
+						t = isWW.getMaxDate(isCheck);
+						tmin = isWW.getMinDate(isCheck);
 						if(tsi==0L){
 							if(si == candidateSize-1){
 								//candidate.supportIncr();
 								candidate.addSupportedByCheck(analysedSeries.getSeriesName());
 								break;
 							}else {
-								tsi =l;
+								tsi =isWW.getMinDate(isCheck);
+								tsimax = isWW.getMaxDate(isCheck);
 								ts1 =l;
 								si++;
+								
 							}
 						}else {
 						
-							if(((tsi +maxGap) >= t) ){
+							//if(((tsi +maxGap) >= t) && //(tsi + minGap) <= l){
+							//		(tsimax + minGap) >= tmin){
+							if( (t -tsi) <= maxGap  
+									&& ( (tmin-tsimax) >= minGap )
+									//&& (tsi + minGap) <= l
+									){	
+								
 								if(((t - ts1) <= timeConstraint)){
 									if(si==candidateSize-1){
 										//candidate.supportIncr();
 										candidate.addSupportedByCheck(analysedSeries.getSeriesName());
 										break;
 									}else{
+										tsi =isWW.getMinDate(isCheck);
+										tsimax = isWW.getMaxDate(isCheck);
 										si++;
 									}
 								}
@@ -268,7 +302,11 @@ public class SequencePatterns {
 		si--;
 		lsearched = l -maxGap +1;
 		while(l>lsearched){
+			
 			i--;
+			if(i<0) {
+				return true;
+			}
 			l = dates[i];
 		}
 		if(si ==0){
