@@ -4,12 +4,10 @@ Step: 1
 generated candidates :39
 candidates rejected by hash tree: 38
 confirmed sequences  :1
-ver true 1
 Step: 2
 generated candidates :1
 candidates rejected by hash tree: 0
 confirmed sequences  :0
-ver true 1
 
 
 SUMMARY
@@ -25,15 +23,15 @@ useHashTree: true
 hierarchy  : false
 
 Execution info:
-execTime: 9ms
+execTime: 10ms
 Pattern Sequence found: 1
 Pattern Sequence reduced by hash tree : 38
 Longest: 1
 
 Performance indicators:
 Ratio [Confirmed Sequences/Generated Candidates]: 0.025
-Exec time per confirmed sequence: 9.0ms
+Exec time per confirmed sequence: 10.0ms
 
 RESULT SERIES:
 
-support: 20: volume_change:0 , 
+support: 2 0 : {volume_change:0 , } ,

@@ -2,8 +2,10 @@ SEQUENCE SEARCH REPORT:
 
 Step: 1
 generated candidates :39
+confirmed sequences  :1
+Step: 2
+generated candidates :1
 confirmed sequences  :0
-ver false 0
 
 
 SUMMARY
@@ -19,14 +21,15 @@ useHashTree: false
 hierarchy  : false
 
 Execution info:
-execTime: 2ms
-Pattern Sequence found: 0
+execTime: 29ms
+Pattern Sequence found: 1
 Pattern Sequence reduced by hash tree : 0
-Longest: 0
+Longest: 1
 
 Performance indicators:
-Ratio [Confirmed Sequences/Generated Candidates]: 0.0
-Exec time per confirmed sequence: Infinityms
+Ratio [Confirmed Sequences/Generated Candidates]: 0.025
+Exec time per confirmed sequence: 29.0ms
 
 RESULT SERIES:
 
+support: 2 0 : {volume_change:0 , } ,

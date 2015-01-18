@@ -91,6 +91,7 @@ public class GSP {
 		seqPatt.setWindowSize(params.slidingWindowSize);
 		seqPatt.setTimeConstraint(params.timeConstraint);
 		seqPatt.setWithHashTree(params.useHashTree);
+		seqPatt.setHierarchy(params.useTaxonomies);
 		
 		return seqPatt;
 	}

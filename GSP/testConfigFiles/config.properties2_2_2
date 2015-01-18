@@ -1,7 +1,7 @@
 useHashTree=false
 useTaxonomies=true
 slidingWindowSize=14
-minSupport=2
+minSupport=25
 minGap=28
 maxGap=49
 timeConstraint=365

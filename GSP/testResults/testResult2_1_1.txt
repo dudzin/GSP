@@ -2,8 +2,13 @@ SEQUENCE SEARCH REPORT:
 
 Step: 1
 generated candidates :2927
+confirmed sequences  :22
+Step: 2
+generated candidates :715
+confirmed sequences  :3
+Step: 3
+generated candidates :0
 confirmed sequences  :0
-ver false 0
 
 
 SUMMARY
@@ -19,14 +24,39 @@ useHashTree: false
 hierarchy  : false
 
 Execution info:
-execTime: 18ms
-Pattern Sequence found: 0
+execTime: 10170ms
+Pattern Sequence found: 25
 Pattern Sequence reduced by hash tree : 0
-Longest: 0
+Longest: 2
 
 Performance indicators:
-Ratio [Confirmed Sequences/Generated Candidates]: 0.0
-Exec time per confirmed sequence: Infinityms
+Ratio [Confirmed Sequences/Generated Candidates]: 0.006864360241625481
+Exec time per confirmed sequence: 406.8ms
 
 RESULT SERIES:
 
+support: 30 0 : {volume_change:0 , } ,
+support: 2 0 : {close:65.53 , } ,
+support: 2 0 : {close:58.98 , } ,
+support: 2 0 : {close:20.97 , } ,
+support: 2 0 : {close:20.93 , } ,
+support: 2 0 : {close:37.15 , } ,
+support: 2 0 : {close:79.78 , } ,
+support: 2 0 : {close:54.63 , } ,
+support: 2 0 : {close:31.26 , } ,
+support: 2 0 : {close:17.14 , } ,
+support: 2 0 : {close:17.28 , } ,
+support: 2 0 : {close:46.25 , } ,
+support: 2 0 : {close:82.52 , } ,
+support: 2 0 : {close:65.27 , } ,
+support: 2 0 : {close:36.39 , } ,
+support: 2 0 : {close:20.82 , } ,
+support: 2 0 : {close:20.37 , } ,
+support: 2 0 : {close:19.75 , } ,
+support: 2 0 : {close:37.08 , } ,
+support: 2 0 : {close:88.98 , } ,
+support: 2 0 : {close:36.00 , } ,
+support: 6 0 : {close_change:0 , } ,
+support: 2 0 : {close:17.14 , close:17.28 , } ,
+support: 2 0 : {close:37.15 , } ,1 : {close:36.00 , } ,
+support: 2 0 : {volume_change:0 , close:46.25 , } ,
