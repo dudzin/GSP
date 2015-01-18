@@ -65,7 +65,7 @@ public class SequencePatterns {
 			confirmedSequencesNum += (resultSeries.size()- cnt);
 			cnt =  resultSeries.size();
 			i++; 
-			System.out.println("ver " + withHashTree + " " + resultSeries.size());
+			
 		} while (supportedCandidates.size() !=0);
 		long endTime = System.currentTimeMillis();
 		System.out.println(); System.out.println();
