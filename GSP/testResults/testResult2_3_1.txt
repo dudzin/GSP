@@ -1,0 +1,68 @@
+SEQUENCE SEARCH REPORT:
+
+Step: 1
+generated candidates :2927
+candidates rejected by hash tree: 2905
+confirmed sequences  :22
+ver true 22
+Step: 2
+generated candidates :715
+candidates rejected by hash tree: 455
+confirmed sequences  :3
+ver true 25
+Step: 3
+generated candidates :0
+candidates rejected by hash tree: 0
+confirmed sequences  :0
+ver true 25
+
+
+SUMMARY
+
+Parameters:
+file:        testdata/testBIG.csv
+minSupp:     2
+minGap:      28
+maxGap:      49
+timeConstr:  365
+widnowSize:  7
+useHashTree: true
+hierarchy  : false
+
+Execution info:
+execTime: 288ms
+Pattern Sequence found: 25
+Pattern Sequence reduced by hash tree : 3360
+Longest: 2
+
+Performance indicators:
+Ratio [Confirmed Sequences/Generated Candidates]: 0.006864360241625481
+Exec time per confirmed sequence: 11.52ms
+
+RESULT SERIES:
+
+support: 300: volume_change:0 , 
+support: 20: close:17.14 , 
+support: 20: close:17.28 , 
+support: 20: close:46.25 , 
+support: 20: close:20.97 , 
+support: 20: close:20.93 , 
+support: 20: close:20.82 , 
+support: 20: close:20.37 , 
+support: 20: close:19.75 , 
+support: 20: close:37.08 , 
+support: 20: close:36.00 , 
+support: 20: close:58.98 , 
+support: 20: close:31.26 , 
+support: 20: close:88.98 , 
+support: 60: close_change:0 , 
+support: 20: close:65.53 , 
+support: 20: close:54.63 , 
+support: 20: close:82.52 , 
+support: 20: close:36.39 , 
+support: 20: close:79.78 , 
+support: 20: close:37.15 , 
+support: 20: close:65.27 , 
+support: 20: volume_change:0 , close:46.25 , 
+support: 20: close:17.14 , close:17.28 , 
+support: 20: close:37.15 , 1: close:36.00 , 

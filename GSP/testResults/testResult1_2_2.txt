@@ -1,7 +1,7 @@
 SEQUENCE SEARCH REPORT:
 
 Step: 1
-generated candidates :39
+generated candidates :76
 confirmed sequences  :0
 ver false 0
 
@@ -14,7 +14,7 @@ minSupp:     2
 minGap:      28
 maxGap:      49
 timeConstr:  365
-widnowSize:  7
+widnowSize:  14
 useHashTree: false
 hierarchy  : false
 

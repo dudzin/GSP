@@ -108,7 +108,7 @@ public class GSP {
 		System.out.println("RESULT SERIES:");
 		System.out.println();
 		for (Series s : seqPatt.getResultSeries() ) {
-			System.out.println(s);
+			System.out.println(seqPatt.translateSeries(s));
 		}
 	}
 }

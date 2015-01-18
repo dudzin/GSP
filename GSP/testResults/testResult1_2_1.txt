@@ -1,7 +1,7 @@
 SEQUENCE SEARCH REPORT:
 
 Step: 1
-generated candidates :39
+generated candidates :76
 confirmed sequences  :0
 ver false 0
 
@@ -19,7 +19,7 @@ useHashTree: false
 hierarchy  : false
 
 Execution info:
-execTime: 2ms
+execTime: 1ms
 Pattern Sequence found: 0
 Pattern Sequence reduced by hash tree : 0
 Longest: 0

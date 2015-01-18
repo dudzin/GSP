@@ -28,6 +28,31 @@
 \usepackage{float}
 \usepackage{indentfirst}
 
+% listingi
+\usepackage{listings}
+\definecolor{dkgreen}{rgb}{0,0.39063,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.50}
+\lstset{ %
+%  language=Matlab,                % the language of the code
+  basicstyle=\footnotesize,           % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},      % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},          % keyword style
+  commentstyle=\color{dkgreen},       % comment style
+  stringstyle=\color{mauve},         % string literal style
+}
+
+
 \title{ \textbf{Metody eksploracji danych - projekt} \\ \Large Dokumentacja}
 \author{Przemysław Barcikowski, Dariusz Dudziński}
 
@@ -35,36 +60,138 @@
 \maketitle
 \section{Zadanie}
 \subsection{Temat}
-\paragraph{} Wyszukiwanie uogolnionych wzorcow sekwencyjnych (Generalized Sequential Patterns)
+\paragraph{} Wyszukiwanie uogólnionych wzorców sekwencyjnych (Generalized Sequential Patterns)
 \subsection{Cel projektu}
 \paragraph{} Celem niniejszego projektu jest stworzenie aplikacji spełniającej poniższe wymagania:
-\begin{enumerate}
-\item Aplikacja służy do badania sekwencyjnych reguł asocjacyjnych na podstawie danych z giełdy,
-\item Aplikacja operuje na csv, gdzie np pierwsza kolumna to nazwa serii, druga to data. Kolejne atrybuty będą wykorzystywane do samego wyliczania sekwencji. Powinny to być wartości liczbowe,
+\begin{itemize}
+\item Aplikacja służy do badania sekwencyjnych reguł asocjacyjnych na podstawie notowań giełdowych,
+\item Aplikacja przyjmuje pliki z danymi w formacie .csv, gdzie pierwsza kolumna to nazwa serii, druga to data. Kolejne atrybuty będą wykorzystywane do samego wyliczania sekwencji. Są to wartości liczbowe,
 \item Aplikacja automatycznie buduje taksonomię na atrybutach liczbowych w postaci
 \begin{itemize}
 \item zaokrąglenie do pełnej wartości,
 \item wartość dodatnia/ujemna.
 \end{itemize}
-\item Aplikacja operuje z zadanym przez użytkownika oknem czasowym (sliding window), ograniczeniami czasowymi (min i max różnica między wystąpieniami w serii) i minimalnym wsparciem
+\item Aplikacja operuje z zadanym przez użytkownika parametrami,
+
+% oknem czasowym (sliding window), ograniczeniami czasowymi (min i max różnica między wystąpieniami w serii) i minimalnym wsparciem
+
 \item Aplikacja generuje sekwencyjne reguły asocjacyjne,
-\item Napisana w języku Java,
-\item Badanie będzie miało na celu odnalezienie reguł z danych.
-\end{enumerate}
+\item Aplikacja jest napisana w języku Java.
+\end{itemize}
+Dodatkowo:
+\begin{itemize}
+\item Aplikacja powinna zostać przetestowana zarówno pod kątem poprawności, jak i wydajności,
+\item należy przeprowadzić eksperymenty mające na celu wyszukanie ciekawych wzorców sekwencyjnych.
+\end{itemize}
 
 \section{Rozwiązanie}
 \label{sec:rozwiazanie}
-Do rozwiązania wyżej postawionego problemu został wykorzystany algorytm Generalized Sequential Patterns (GSP) \cite{bib:GSP}. Jako dane do testowania oraz eksperymentów wybrano notowania giełdowe indeksu Dow Jones, pobrane ze strony \cite{bib:DowJones}.
-
-\section{Założenia programu}
-
-\subsection{Funkcjonalności aplikacji}
-\subsection{Konfiguracja parametrów programu}
-\subsection{Wybrana technologia i wydajność}
+\paragraph{} Do rozwiązania wyżej postawionego problemu został wykorzystany algorytm Generalized Sequential Patterns (GSP) \cite{bib:GSP}. Jako dane do testowania oraz eksperymentów wybrano notowania giełdowe indeksu Dow Jones, pobrane ze strony \cite{bib:DowJones}.
 
 \section{Implementacja}
 
+\subsection{Funkcjonalności aplikacji}
+\paragraph{} Aplikacja wykonuje algorytm GSP (opisany w \cite{bib:GSP}), czyli wyszukuje wszystkie uogólnione wzorce sekwencyjne w zadanym pliku z danymi, przy zadanych parametrach algorytmu (patrz \ref{subsec:Param}). Jako wynik działania, aplikacja kieruje do standardowego strumienia wyjścia następujące informacje:
+\begin{itemize}
+\item Raport z wyszukiwania wzorców sekwencyjnych (przykład: Listing \ref{lst:result1}.),
+\begin{lstlisting}[caption={Raport z wyszukiwania},label={lst:result1}]
+SEQUENCE SEARCH REPORT:
+
+Step: 1
+generated candidates :76
+candidates rejected by hash tree: 64
+confirmed sequences  :12
+ver true 12
+\end{lstlisting}
+\item Podsumowanie wykonania algorytmu (przykład: Listing \ref{lst:result2}.), zawierające:
+\begin{itemize}
+\item Zadane parametry,
+\item Informacje dotyczące samego wykonania algorytmu,
+\item Wskaźniki wydajności.
+\end{itemize}
+\begin{lstlisting}[caption={Podsumowanie},label={lst:result2}]
+SUMMARY
+
+Parameters:
+file:        testdata/test4.csv
+minSupp:     2
+minGap:      28
+maxGap:      49
+timeConstr:  365
+widnowSize:  7
+useHashTree: true
+hierarchy  : false
+
+Execution info:
+execTime: 478ms
+Pattern Sequence found: 325
+Pattern Sequence reduced by hash tree : 91
+Longest: 7
+
+Performance indicators:
+Ratio [Confirmed Sequences/Generated Candidates]: 0.3722794959908362
+Exec time per confirmed sequence: 1.4707692307692308ms
+\end{lstlisting}
+\item Wyszukane sekwencje (przykład: Listing \ref{lst:result3}.).
+\begin{lstlisting}[caption={Wyszukane sekwencje},label={lst:result3}]
+RESULT SERIES:
+
+support: 20 : close.sign:1 , 
+support: 20 : close_change.sign:1 , 
+support: 20 : volume.sign:1 , 
+support: 20 : volume_change:0 , 
+\end{lstlisting}
+\end{itemize}
+
+
+\subsection{Konfiguracja parametrów programu}
+\label{subsec:Param}
+\paragraph{} Parametry algorytmu są podawane za pomocą pliku konfiguracyjnego. Użytkownik może regulować następujące parametry algorytmu:
+\begin{itemize}
+\item wykorzystywanie drzewa hashującego (parametr $useHashTree$, zmienna binarna),
+\item wykorzystywanie taksonomii (parametr $useTaxonomies$, zmienna binarna),
+\item wielkość okna czasowego (parametr $slidingWindowSize$, zmienna całkowita, podawana w dniach),
+\item minimalne wsparcie (parametr $minSupport$, zmienna całkowita, podawana w dniach),
+\item minimalny odstęp (parametr $minGap$, zmienna całkowita, podawana w dniach),
+\item maksymalny odstęp (parametr $maxGap$, zmienna całkowita, podawana w dniach),
+\item ograniczenie czasowe (parametr $timeConstraint$, zmienna całkowita, podawana w dniach),
+\item ścieżka do pliku z danymi (parametr $dataFilePath$).
+\end{itemize}
+Przykładowy plik konfiguracyjny został pokazany na Listingu \ref{lst:config}.
+\begin{lstlisting}[caption={Przykładowy plik konfiguracyjny},label={lst:config}]
+useHashTree=true
+useTaxonomies=true
+slidingWindowSize=7
+minSupport=2
+minGap=28
+maxGap=49
+timeConstraint=365
+dataFilePath=testdata/test4.csv
+\end{lstlisting}
+\subsection{Zalecany sposób uruchamiania}
+Aplikację można uruchomić na kilka sposobów, zalecany to stworzenie wykonywalnego pliku $.jar$ i wywoływanie go w linii poleceń. Możliwe opcje wywoływania:
+\begin{itemize}
+\item Z domyślnym plikiem konfiguracyjnym, jego nazwa to $config.properties$, musi się on znajdować w tej samej lokacji, co plik wykonywalny (przykład: Listing \ref{lst:call1}.)
+\begin{lstlisting}[caption={Wywołanie dla domyślnego pliku konfiguracyjnego},label={lst:call1}]
+java -jar programGSP.jar
+\end{lstlisting}
+\item Z podaniem ścieżki do pliku konfiguracyjnego (przykład: Listing \ref{lst:call2}.)
+\begin{lstlisting}[caption={Wywołanie ze specyfikacją pliku konfiguracyjnego},label={lst:call2}]
+java -jar programGSP.jar "config.properties_custom"
+\end{lstlisting}
+\end{itemize}
+\paragraph{} W zależności od wielkości pliku z danymi, wynik działania programu może składać się z wielu linii tekstu. Z tego względu zaleca się przekierowanie wyniku programu do pliku tekstowego (przykład: Listing \ref{lst:call3}.)
+\begin{lstlisting}[caption={Wywołanie dla domyślnego pliku konfiguracyjnego},label={lst:call3}]
+java -jar programGSP.jar "config.properties_custom" > output.txt
+\end{lstlisting}
+\subsection{Wybrana technologia i wydajność}
+\paragraph{} Aplikacja została napisana w języku Java ze względu na łatwość implementacji. Zostało to okupione wydajnością aplikacji, gdyż Java nie należy do najszybszych języków programowania. Świadomie zrezygnowano z poprawy wydajności na rzecz wygody programowania ze względu na to, że aplikacja ma charakter jedynie demonstracyjny, nie została stworzona z myślą o zastosowaniu w biznesie ani badaniach naukowych.
+
 \section{Testy}
+\subsection{Jakościowe}
+\paragraph{} Poprawność działania aplikacji zostało przetestowane przy pomocy testów jednostkowych, zawartych w klasach $SequencePatternsTest$ oraz $CSVReaderTest$ (zawarte w plikach $.java$ o takich samych nazwach)
+\subsection{Wydajnościowe}
+\paragraph{} Sprawdzono również wydajność programu, w zależności od wielkości okna czasowego (sliding window) oraz tego, czy zostały wykorzystane drzewo hashujące oraz taksonomia. Testy przeprowadzone dla dwóch plików z danymi: małego oraz dużego.
 
 \section{Eksperymenty i wyniki}
 \nocite{*}

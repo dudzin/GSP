@@ -14,19 +14,19 @@ minSupp:     2
 minGap:      28
 maxGap:      49
 timeConstr:  365
-widnowSize:  7
+widnowSize:  14
 useHashTree: false
 hierarchy  : false
 
 Execution info:
-execTime: 2ms
+execTime: 0ms
 Pattern Sequence found: 0
 Pattern Sequence reduced by hash tree : 0
 Longest: 0
 
 Performance indicators:
 Ratio [Confirmed Sequences/Generated Candidates]: 0.0
-Exec time per confirmed sequence: Infinityms
+Exec time per confirmed sequence: NaNms
 
 RESULT SERIES:
 

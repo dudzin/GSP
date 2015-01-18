@@ -1,0 +1,12 @@
+SEQUENCE SEARCH REPORT:
+
+Step: 1
+generated candidates :3973
+candidates rejected by hash tree: 3735
+confirmed sequences  :238
+ver true 238
+Step: 2
+generated candidates :84847
+candidates rejected by hash tree: 49164
+confirmed sequences  :3950
+ver true 4188
