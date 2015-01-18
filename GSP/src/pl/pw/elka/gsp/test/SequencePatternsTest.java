@@ -323,9 +323,9 @@ public class SequencePatternsTest {
 			
 			
 			SequencePatterns seqPatt = initSeqPatt("testdata/test2.csv", true); //taxonomies
-			seqPatt.setMaxGap(49);
+			seqPatt.setMaxGap(36);
 			seqPatt.setMinGap(14);
-			seqPatt.setMinSupp(20);
+			seqPatt.setMinSupp(25);
 			seqPatt.setWindowSize(2);
 			seqPatt.setWithHashTree(true);
 			seqPatt.runAlgorithm();// use hash tree
@@ -342,7 +342,7 @@ public class SequencePatternsTest {
 			 * sequences: 85604
 			 * */
 			
-			/*for (Series s : seqPatt.getResultSeries() ) {
+			for (Series s : seqPatt.getResultSeries() ) {
 				System.out.println(seqPatt.translateSeries(s));
 			}
 			

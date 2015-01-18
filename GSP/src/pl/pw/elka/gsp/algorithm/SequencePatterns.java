@@ -24,7 +24,7 @@ public class SequencePatterns {
 	
 	private ArrayList<Series> newCandidates ;
 	private Series lparent, rparent, newseries;
-	private ArrayList<Series> supportedCandidates, resultSeries;
+	private ArrayList<Series> supportedCandidates, resultSeries, candidatesInit;
 	
 	private int candidateSize;
 	private long lsearched;
@@ -163,8 +163,66 @@ public class SequencePatterns {
 			for(int j = 0; j< supportedCandidates.size() ; j++){
 				rparent = supportedCandidates.get(j);
 				ArrayList<Series> newserieslist = lparent.merge(rparent);
+				boolean prune= false;
+				
 				if(newserieslist != null){
-					newCandidates.addAll(newserieslist);
+					for (Series newseries : newserieslist) {
+						ArrayList<Series> seriesToCheck = newseries.getSeriesByRemovingFirst();
+						prune = false;
+						if(newseries.toString().contains("0:[2,14] 1:[30]")){
+							int f=0;
+						}
+						
+						
+						for (Series sCh : seriesToCheck) {
+							boolean isIn = false;
+							for (Series previous : candidatesInit) {
+								if(previous.equals(sCh)){
+									if(previous.getSupportByCheck() < minSupp){
+										prune= true;
+										break;
+									}else {
+										prune= false;
+										break;
+									}
+								}
+								
+							}
+							//if(!isIn){
+							//	prune = true;
+							//	break;
+							//}
+						}
+						
+						if(!prune){
+							seriesToCheck = newseries.getSeriesByRemovingLast();
+							//prune = false;
+							for (Series sCh : seriesToCheck) {
+							boolean isIn = false;
+							for (Series previous : candidatesInit) {
+								if(previous.equals(sCh)){
+									if(previous.getSupportByCheck() < minSupp){
+										prune= true;
+										break;
+									}else {
+										prune= false;
+										break;
+									}
+								}
+							}
+						}
+					}
+						
+					if(!prune){
+						newCandidates.add(newseries);
+						
+					}else {
+						//System.out.println("prune");
+					}
+				}
+					
+					
+					//newCandidates.addAll(newserieslist);
 				}
 			}
 		}
@@ -186,7 +244,7 @@ public class SequencePatterns {
 	
 	public void checkSupport(boolean withHashTree) {
 
-		ArrayList<Series> candidatesInit;
+		
 		
 		if(withHashTree){
 			buildCandidateHashTree();
@@ -354,14 +412,15 @@ public class SequencePatterns {
 	}
 	
 	public String translateSeries(Series series){
-		String s ="support: " + series.getSupportByCheck();
+		String s ="support: " + series.getSupportByCheck() + " ";
 		Set<Long> keys = series.getDataSeq().keySet();
 		for (Long string : keys) {
-			s += string + " : ";
+			s += string + " : {";
 			int[] items = series.getDataSeq().get(string).getItems();
 			for (int i : items) {
 				s += dictionary.get(i) + " , ";
 			}
+			s += "} ,";
 		}
 		return s;
 	}
