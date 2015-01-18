@@ -243,6 +243,7 @@ public class SequencePatternsTest {
 				
 		SequencePatterns seqPatt = new SequencePatterns(path);
 		seqPatt.setSeries(testSeries);
+		seqPatt.setHierarchy(hierarchy);
 		seqPatt.setMinSupp(2);
 		seqPatt.setDictionary(reader.getDictionary());
 		seqPatt.setMinGap(1);
@@ -326,7 +327,7 @@ public class SequencePatternsTest {
 			seqPatt.setMinGap(28);
 			seqPatt.setMinSupp(2);
 			seqPatt.setWindowSize(2);
-			seqPatt.setWithHashTree(false);
+			seqPatt.setWithHashTree(true);
 			seqPatt.runAlgorithm();// use hash tree
 			
 			
@@ -341,16 +342,18 @@ public class SequencePatternsTest {
 			 * sequences: 85604
 			 * */
 			
+			/*
 			seqPatt.getSeries();
 			
 			for (Series s : seqPatt.getResultSeries() ) {
-				System.out.println(s);
+				System.out.println(seqPatt.translateSeries(s));
 			}
 			
 			Set<String> keys = seqPatt.getSeries().keySet();
 			for (String k : keys  ) {
-				System.out.println(seqPatt.getSeries().get(k));
+				System.out.println(seqPatt.translateSeries(seqPatt.getSeries().get(k)));
 			}
+			*/
 	}
 	
 	

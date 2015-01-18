@@ -14,7 +14,7 @@ public class SequencePatterns {
 	private HashMap<String, Series> series, candidates;
 	private HashMap<Integer,String> dictionary;
 	private CandidateHashTree candidateTree;
-	private boolean withHashTree;
+	private boolean withHashTree, hierarchy;
 	private int minSupp;
 	private int timeConstraint = 365;
 	private int treeLevel;
@@ -24,7 +24,6 @@ public class SequencePatterns {
 	
 	private ArrayList<Series> newCandidates ;
 	private Series lparent, rparent, newseries;
-	private int[] llast, rlast;
 	private ArrayList<Series> supportedCandidates, resultSeries;
 	
 	private int candidateSize;
@@ -33,6 +32,7 @@ public class SequencePatterns {
 	private long[] dates ;
 	private long t,l;
 	private int windowSize;
+	private int reduceCnt;
 	
 	public SequencePatterns(String fileName){
 		candidateTree = new CandidateHashTree(-1, -1);
@@ -43,6 +43,7 @@ public class SequencePatterns {
 	}
 	
 	public void readData(String dateFormat, boolean hierarchy) throws ParseException{
+		this.hierarchy = hierarchy;
 		series = csvReader.read(fileName,dateFormat, hierarchy);
 	}
 	
@@ -57,7 +58,6 @@ public class SequencePatterns {
 			System.out.println("Step: " + i);
 			System.out.println("generated candidates :" + candidates.size());
 			generatedCandidatesNum += candidates.size();
-			buildCandidateHashTree();
 			checkSupport(withHashTree);
 			System.out.println("confirmed sequences  :" + (resultSeries.size()- cnt));
 			confirmedSequencesNum += (resultSeries.size()- cnt);
@@ -75,16 +75,19 @@ public class SequencePatterns {
 		System.out.println("SUMMARY");
 		System.out.println();
 		System.out.println("Parameters:");
-		System.out.println("file:       " + fileName);
-		System.out.println("minSupp:    " + minSupp);
-		System.out.println("minGap:     " + minGap);
-		System.out.println("maxGap:     " + maxGap);
-		System.out.println("timeConstr: " + timeConstraint);
-		System.out.println("widnowSize: " + windowSize);
+		System.out.println("file:        " + fileName);
+		System.out.println("minSupp:     " + minSupp);
+		System.out.println("minGap:      " + minGap);
+		System.out.println("maxGap:      " + maxGap);
+		System.out.println("timeConstr:  " + timeConstraint);
+		System.out.println("widnowSize:  " + windowSize);
+		System.out.println("useHashTree: " + withHashTree);
+		System.out.println("hierarchy  : " + hierarchy);
 		System.out.println();
 		System.out.println("Execution info:");
 		System.out.println("execTime: " + ((int)execTime) + "ms");
 		System.out.println("Pattern Sequence found: " + resultSeries.size());
+		System.out.println("Pattern Sequence reduced by hash tree : " + reduceCnt);
 		System.out.println("Longest: " + (treeLevel-1));
 		System.out.println();
 		System.out.println("Performance indicators:");
@@ -157,8 +160,7 @@ public class SequencePatterns {
 			
 			lparent = supportedCandidates.get(i);
 			newseries = new Series(lparent);
-			llast = newseries.getLastItem();
-			
+
 			for(int j = 0; j< supportedCandidates.size() ; j++){
 				rparent = supportedCandidates.get(j);
 				ArrayList<Series> newserieslist = lparent.merge(rparent);
@@ -187,11 +189,14 @@ public class SequencePatterns {
 	public void checkSupport(boolean withHashTree) {
 
 		ArrayList<Series> candidatesInit;
-		checkTree();
-		checkCandidateTree();
+		
 		if(withHashTree){
-			
+			buildCandidateHashTree();
+			checkTree();
+			checkCandidateTree();
 			candidatesInit= candidateTree.getRoot().getCandidateSeries(minSupp);
+			System.out.println("candidates rejected by hash tree: " + (candidateTree.getRoot().getCandidateSeries().size() - candidatesInit.size()));
+			reduceCnt +=  candidateTree.getRoot().getCandidateSeries().size() - candidatesInit.size();
 			
 		}else {
 
@@ -367,6 +372,22 @@ public class SequencePatterns {
 	public HashMap<Integer,String> getDictionary() {
 		return dictionary;
 	}
+	
+	public String translateSeries(Series series){
+		String s ="support: " + series.getSupportByCheck();
+		Set<Long> keys = series.getDataSeq().keySet();
+		for (Long string : keys) {
+			s += string + ": ";
+			int[] items = series.getDataSeq().get(string).getItems();
+			for (int i : items) {
+				s += dictionary.get(i) + " , ";
+			}
+		}
+		//s += " supp: " + supportedByHash.size() + " by Hash: "+ supportedByHash  + " by check:" + supportedByCheck  ;
+		//System.out.println(s);
+		return s;
+	}
+	
 
 	public void setDictionary(HashMap<Integer,String> dictionary) {
 		this.dictionary = dictionary;
@@ -443,6 +464,22 @@ public class SequencePatterns {
 	public void setWindowSize(int windowSize) {
 		this.windowSize = windowSize;
 		this.candidateTree.setWindowSize(windowSize);
+	}
+
+	public boolean isHierarchy() {
+		return hierarchy;
+	}
+
+	public void setHierarchy(boolean hierarchy) {
+		this.hierarchy = hierarchy;
+	}
+
+	public int getReduceCnt() {
+		return reduceCnt;
+	}
+
+	public void setReduceCnt(int reduceCnt) {
+		this.reduceCnt = reduceCnt;
 	}
 
 	
