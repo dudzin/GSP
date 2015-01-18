@@ -24,8 +24,7 @@ public class CandidateHashTree {
 	
 	
 	public void add(Series series) {
-				
-		//System.out.println(series);
+
 		root.addSeries(series);
 		
 	}
@@ -38,7 +37,6 @@ public class CandidateHashTree {
 			int[] items = elements.get(date).getItems();
 			for (int i : items) {
 				if(node.getHashesToCheck()[node.hash(i)]){
-					//System.out.println("it is " + i + " t= " + date);
 					checkNode(node, series, date, i);
 				}
 			}			

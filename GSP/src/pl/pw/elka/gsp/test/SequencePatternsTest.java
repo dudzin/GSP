@@ -322,10 +322,10 @@ public class SequencePatternsTest {
 			System.out.println("\n runTest() \n");
 			
 			
-			SequencePatterns seqPatt = initSeqPatt("testdata/test4.csv", true); //taxonomies
+			SequencePatterns seqPatt = initSeqPatt("testdata/test2.csv", true); //taxonomies
 			seqPatt.setMaxGap(49);
-			seqPatt.setMinGap(28);
-			seqPatt.setMinSupp(2);
+			seqPatt.setMinGap(14);
+			seqPatt.setMinSupp(20);
 			seqPatt.setWindowSize(2);
 			seqPatt.setWithHashTree(true);
 			seqPatt.runAlgorithm();// use hash tree
@@ -342,13 +342,11 @@ public class SequencePatternsTest {
 			 * sequences: 85604
 			 * */
 			
-			/*
-			seqPatt.getSeries();
-			
-			for (Series s : seqPatt.getResultSeries() ) {
+			/*for (Series s : seqPatt.getResultSeries() ) {
 				System.out.println(seqPatt.translateSeries(s));
 			}
 			
+			/*
 			Set<String> keys = seqPatt.getSeries().keySet();
 			for (String k : keys  ) {
 				System.out.println(seqPatt.translateSeries(seqPatt.getSeries().get(k)));

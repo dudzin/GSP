@@ -33,6 +33,8 @@ public class SequencePatterns {
 	private long t,l;
 	private int windowSize;
 	private int reduceCnt;
+	private ItemSetWithWindow isWW;
+	private ItemSet isCheck;
 	
 	public SequencePatterns(String fileName){
 		candidateTree = new CandidateHashTree(-1, -1);
@@ -121,8 +123,7 @@ public class SequencePatterns {
 			
 			}else {
 				candidateGenerationGSP();
-			}
-			
+			}		
 			treeLevel++;
 		}else {
 			return false;
@@ -154,20 +155,17 @@ public class SequencePatterns {
 	}
 	
 	private void candidateGenerationGSP() {
-
 		newCandidates = new ArrayList<Series>();
 		for(int i =0; i< supportedCandidates.size(); i++){
 			
 			lparent = supportedCandidates.get(i);
 			newseries = new Series(lparent);
-
 			for(int j = 0; j< supportedCandidates.size() ; j++){
 				rparent = supportedCandidates.get(j);
 				ArrayList<Series> newserieslist = lparent.merge(rparent);
 				if(newserieslist != null){
 					newCandidates.addAll(newserieslist);
 				}
-				//System.out.println("from " + lparent + " & " + rparent + " "+ newserieslist);
 			}
 		}
 		fillCandidates(newCandidates);
@@ -199,19 +197,17 @@ public class SequencePatterns {
 			reduceCnt +=  candidateTree.getRoot().getCandidateSeries().size() - candidatesInit.size();
 			
 		}else {
-
-			candidatesInit= candidateTree.getRoot().getCandidateSeries();
+			candidatesInit = new ArrayList<Series>();
+			Set<String> keys = candidates.keySet();
+			for (String key : keys) {
+				candidatesInit.add(candidates.get(key));
+			}
+			
 		}
 		ArrayList<Series> candidatesToCheck = new ArrayList<Series>();
 		
 		Series analysedSeries;
-		
-		//System.out.println("ver " + withHashTree + " " + candidatesInit.size());
-		//for (Series series : candidatesInit) {
-		//	System.out.println("to Check:" + series);
-		//}
-		
-		
+	
 		if(candidatesInit == null || candidatesInit.size() ==0){
 			supportedCandidates = new ArrayList<Series>();
 			return;
@@ -219,7 +215,7 @@ public class SequencePatterns {
 		
 		int size = candidatesInit.get(0).getDataSeq().size();
 		for(Series candidate : candidatesInit){
-			//candidate.setSupport(0);
+
 			if(size ==1){
 				candidatesToCheck.add(candidate);
 			}else {
@@ -252,13 +248,6 @@ public class SequencePatterns {
 				for (int i=0 ; i< dates.length ;i++) {
 					l = dates[i];
 					t =l;
-					/*if(tsi != 0L){
-						while(l < tsi+ minGap){
-							i++;
-							l = dates[i];
-						}
-					}*/
-					//{}
 					ArrayList<Long> datesToCheck = new ArrayList<Long>();
 					
 					for (Long date : dates) {
@@ -271,16 +260,13 @@ public class SequencePatterns {
 						itemSetsToCheck.put(date, analysedSeries.getDataSeq().get(date));
 					}
 					
-					ItemSetWithWindow isWW = new ItemSetWithWindow(itemSetsToCheck);
-					ItemSet isCheck = candidate.getDataSeq().get(si);
-					//System.out.println("check " + itemSet);
+					isWW = new ItemSetWithWindow(itemSetsToCheck);
+					isCheck = candidate.getDataSeq().get(si);
 					if((isWW.contains(isCheck))){
-					//if(analysedSeries.getDataSeq().get(l).contains(candidate.getDataSeq().get(si))){
 						t = isWW.getMaxDate(isCheck);
 						tmin = isWW.getMinDate(isCheck);
 						if(tsi==0L){
 							if(si == candidateSize-1){
-								//candidate.supportIncr();
 								candidate.addSupportedByCheck(analysedSeries.getSeriesName());
 								break;
 							}else {
@@ -291,17 +277,11 @@ public class SequencePatterns {
 								
 							}
 						}else {
-						
-							//if(((tsi +maxGap) >= t) && //(tsi + minGap) <= l){
-							//		(tsimax + minGap) >= tmin){
 							if( (t -tsi) <= maxGap  
-									&& ( (tmin-tsimax) >= minGap )
-									//&& (tsi + minGap) <= l
-									){	
+									&& ( (tmin-tsimax) >= minGap )){	
 								
 								if(((t - ts1) <= timeConstraint)){
 									if(si==candidateSize-1){
-										//candidate.supportIncr();
 										candidate.addSupportedByCheck(analysedSeries.getSeriesName());
 										break;
 									}else{
@@ -377,14 +357,12 @@ public class SequencePatterns {
 		String s ="support: " + series.getSupportByCheck();
 		Set<Long> keys = series.getDataSeq().keySet();
 		for (Long string : keys) {
-			s += string + ": ";
+			s += string + " : ";
 			int[] items = series.getDataSeq().get(string).getItems();
 			for (int i : items) {
 				s += dictionary.get(i) + " , ";
 			}
 		}
-		//s += " supp: " + supportedByHash.size() + " by Hash: "+ supportedByHash  + " by check:" + supportedByCheck  ;
-		//System.out.println(s);
 		return s;
 	}
 	
