@@ -9,3 +9,4 @@ target/
 
 # ignore all files ending with ~
 *~ 
+/programGSP.jar
