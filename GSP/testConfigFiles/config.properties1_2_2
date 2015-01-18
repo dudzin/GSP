@@ -1,6 +1,6 @@
 useHashTree=false
 useTaxonomies=true
-slidingWindowSize=10
+slidingWindowSize=14
 minSupport=2
 minGap=28
 maxGap=49
