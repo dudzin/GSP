@@ -178,7 +178,6 @@ public class SequencePatternsTest {
 		for (Series series : supported) {
 			System.out.println(series);
 		}
-		//assertEquals(15, supported.size());
 		assertEquals(27, supported.size());
 		
 		System.out.println("\n Level 3 \n");
@@ -247,7 +246,7 @@ public class SequencePatternsTest {
 		seqPatt.setMinSupp(2);
 		seqPatt.setDictionary(reader.getDictionary());
 		seqPatt.setMinGap(1);
-		seqPatt.setMaxGap(8);//6
+		seqPatt.setMaxGap(8);
 		
 		return seqPatt;
 	}
@@ -329,29 +328,11 @@ public class SequencePatternsTest {
 			seqPatt.setWindowSize(2);
 			seqPatt.setWithHashTree(true);
 			seqPatt.runAlgorithm();// use hash tree
-			
-			
-			ArrayList<Series> result = seqPatt.getResultSeries();
-			/* statistics:
-			 * max gap 8
-			 * min sup 2
-			 * file 3
-			 * hierarchies: true
-			 * time: 239290ms
-			 * steps: 17
-			 * sequences: 85604
-			 * */
-			
+				
 			for (Series s : seqPatt.getResultSeries() ) {
 				System.out.println(seqPatt.translateSeries(s));
 			}
 			
-			/*
-			Set<String> keys = seqPatt.getSeries().keySet();
-			for (String k : keys  ) {
-				System.out.println(seqPatt.translateSeries(seqPatt.getSeries().get(k)));
-			}
-			*/
 	}
 	
 	

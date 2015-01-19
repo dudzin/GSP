@@ -1,6 +1,5 @@
 package pl.pw.elka.gsp.algorithm;
 
-import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -69,7 +68,6 @@ public class ItemSetWithWindow {
 				int[] datevalues = itemSets.get(sorteddates[i]).getItems();
 				for (int j : datevalues) {
 					if(val == j){
-						//return sorteddates[i];
 						valMap.put(val, sorteddates[i]);
 					}
 				}
@@ -79,10 +77,6 @@ public class ItemSetWithWindow {
 		Collection<Long> valkeys = valMap.values();
 		List<Long> sortedValKeys = asSortedList(valkeys);
 		return sortedValKeys.get(0);
-		//return sortedValKeys.get(sortedValKeys.size() -1);
-		
-		
-		//return -1;
 		
 	}
 	
@@ -105,20 +99,16 @@ public class ItemSetWithWindow {
 				int[] datevalues = itemSets.get(date).getItems();
 				for (int i : datevalues) {
 					if(val == i){
-						//return date;
 						valMap.put(val, date);
 					}
 				}
 				
 			}
-		}
-		
+		}		
 		
 		Collection<Long> valkeys = valMap.values();
 		List<Long> sortedValKeys = asSortedList(valkeys);
 		return sortedValKeys.get(sortedValKeys.size()-1);
-		//return sortedValKeys.get(0);
-		//return -1;
 		
 	}
 
