@@ -72,9 +72,6 @@
 \item wartość dodatnia/ujemna.
 \end{itemize}
 \item Aplikacja operuje z zadanym przez użytkownika parametrami,
-
-% oknem czasowym (sliding window), ograniczeniami czasowymi (min i max różnica między wystąpieniami w serii) i minimalnym wsparciem
-
 \item Aplikacja generuje sekwencyjne reguły asocjacyjne,
 \item Aplikacja jest napisana w języku Java.
 \end{itemize}
@@ -83,7 +80,7 @@ Dodatkowo:
 \item Aplikacja powinna zostać przetestowana zarówno pod kątem poprawności, jak i wydajności,
 \item należy przeprowadzić eksperymenty mające na celu wyszukanie ciekawych wzorców sekwencyjnych.
 \end{itemize}
-
+\newpage
 \section{Rozwiązanie}
 \label{sec:rozwiazanie}
 \paragraph{} Do rozwiązania wyżej postawionego problemu został wykorzystany algorytm Generalized Sequential Patterns (GSP) \cite{bib:GSP}. Jest to algorytm posiadający następujące cechy:
@@ -113,13 +110,13 @@ candidates rejected by hash tree: 64
 confirmed sequences  :12
 ver true 12
 \end{lstlisting}
+\newpage
 \item Podsumowanie wykonania algorytmu (przykład: Listing \ref{lst:result2}.), zawierające:
 \begin{itemize}
 \item Zadane parametry,
 \item Informacje dotyczące samego wykonania algorytmu,
 \item Wskaźniki wydajności.
 \end{itemize}
-\newpage
 \begin{lstlisting}[caption={Podsumowanie},label={lst:result2}]
 SUMMARY
 
@@ -169,7 +166,6 @@ support: 20 : volume_change:0 ,
 \item ścieżka do pliku z danymi (parametr $dataFilePath$).
 \end{itemize}
 Przykładowy plik konfiguracyjny został pokazany na Listingu \ref{lst:config}.
-\newpage
 \begin{lstlisting}[caption={Przykładowy plik konfiguracyjny},label={lst:config}]
 useHashTree=true
 useTaxonomies=true
@@ -250,7 +246,7 @@ Nr testu	& $potw\slash gen$	& $czas\slash sekw$ [ms]	& $odrzuceni$	& $sekwencje$
 \end{table}
 
 
-\paragraph{}Wyniki przedstawione w Tabeli \ref{tab:2}. wykazują, że dla wyższego minimalnego wsparcia wykonanie algorytmu trwa krócej, a znalezionych wzorców jest mniej, co było do proste przewidzenia. Niebanalny wniosek jest taki, że dla mniejszego wsparcia (testy 1 i 2) efektywność wyszukiwania sekwencji niewiele się zmienia wraz z rozszerzeniem okna czasowego, natomiast ten parametr ma dość duże znaczenie przy większym wsparciu (testy 3 i 4).
+\paragraph{}Wyniki przedstawione w Tabeli \ref{tab:2}. wykazują, że dla wyższego minimalnego wsparcia wykonanie algorytmu trwa krócej, a znalezionych wzorców jest mniej, co było do proste przewidzenia. Niebanalny wniosek jest taki, że dla mniejszego wsparcia (testy 1 i 2) efektywność wyszukiwania sekwencji niewiele się zmienia wraz z rozszerzeniem okna czasowego, natomiast ten parametr ma dość duże znaczenie przy większym wsparciu (testy 3 i 4). Dodatkowo, we wszystkich testach drzewo hashujące dla badanych kandydatów pozwoliło na znaczną redukcję liczby wzorców sekwencyjnych, które należało przeszukać w bezpośredni sposób. 
 
 \section{Eksperymenty}
 \subsection{Cel eksperymentów}
@@ -268,7 +264,6 @@ minSupport=20
 minGap=14
 maxGap=365
 timeConstraint=365
-dataFilePath=testdata/testBIG.csv
 \end{lstlisting}
 \paragraph{} Spośród wzorców znalezionych dla parametrów podanych na Listingu \ref{lst:expParam1}. wybrano dwa najciekawsze, przedstawiono je na Listingu \ref{lst:expRes1}.
 \begin{lstlisting}[caption={Wzorce, eksperyment 1},label={lst:expRes1}]
@@ -284,7 +279,7 @@ supp:20
 \newpage
 \subsubsection{Dla szerokiego okna czasowego}
 \paragraph{}Listing \ref{lst:expParam2}. pokazuje parametry, dla których wykonano omawiany eksperyment.
-\begin{lstlisting}[caption={Parametry, eksperyment 1},label={lst:expParam2}]
+\begin{lstlisting}[caption={Parametry, eksperyment 2},label={lst:expParam2}]
 useHashTree=true
 useTaxonomies=true
 slidingWindowSize=14
@@ -292,24 +287,90 @@ minSupport=20
 minGap=28
 maxGap=365
 timeConstraint=365
-dataFilePath=testdata/testBIG.csv
 \end{lstlisting}
-\paragraph{}Ciekawa obserwacja: w przeciwieństwie do poprzedniego eksperymentu, w wynikach tego nie występują wzorce składające się z więcej, niż jednej sekwencji. Mimo tego, eksperyment dał kilka ciekawych wyników, np. sekwencje przedstawione na Listingu \ref{lst:expRes1}.
-\begin{lstlisting}[caption={Wzorce, eksperyment 1},label={lst:expRes1}]
+\paragraph{}Ciekawa obserwacja: w przeciwieństwie do poprzedniego eksperymentu, w wynikach tego nie występują wzorce składające się z więcej, niż jednej sekwencji. Mimo tego, eksperyment dał kilka ciekawych wyników, np. sekwencje przedstawione na Listingu \ref{lst:expRes2}.
+\begin{lstlisting}[caption={Wzorce, eksperyment 2},label={lst:expRes2}]
 support: 20 
 0: {close_change.round:-4 , close_change.sign:-1 , volume_change.sign:1 , } ,
 
 support: 20
 0: {close_change.round:-4 , close_change.sign:-1 , volume_change.sign:-1 , } ,
 \end{lstlisting}
-\paragraph{}Z pokazanych sekwencji można wywnioskować, że duży spadek ceny akcji (ok. 4 procent) nie idzie w parze z żadną konkretną zmianą wolumenu obrotu. W jednej z sekwencji duży spadek ceny akcji występuje ze spadkiem, a w drugiej ze wzrostem wolumenu obrotu giełdowego. Można z tego wyciągnąć następujący wniosek: niezależnie od zainteresowania daną spółką inwestor może dużo stracić. Zwiększenie ani zmniejszenie wolumenu obrotu akcjami tej spółki ani nie zwiastuje straty, ani zysku. Ten wniosek nie jest tak banalny, jak się wydaje, gdyż wielu inwestorów odczytuje rosnące zainteresowanie spółką jako zwiastun wzrostu ceny akcji, lecz jak pokazują znalezione sekwencje, nie jest to uzasadnione.
+\paragraph{}Sekwencje przedstawione w Listingu \ref{lst:expRes2} mają ten sam poziom wsparcia i różnią się miedzy sobą ostatnim elementem. Pierwszy wniosek jaki można stąd wyciągnąć brzmi następująco: obie sytuacje występują równie często (taki sam poziom wsparcia). Drugi wniosek: przedstawione sekwencje wzajemnie się wykluczają, ale jednak są poprawne. Powodem jest wykorzystanie okna czasowego i taksonomii (pełnej dla wszystkich elementów). Wykorzystywanie pełnej taksonomii i okna czasowego może prowadzić do wytworzenia wielu takich reguł, a użytkownik, który zasugeruje się takimi sekwencjami może na ich podstawie podjąć błędną decyzję. 
 
+\subsubsection{Szukanie cotygodniowych sekwencji}
+\paragraph{}Ten eksperyment to próba odnalezienia sekwencji, które zdarzają się tydzień po tygodniu. Listing \ref{lst:expParam3}. pokazuje parametry, dla których wykonano omawiany eksperyment.
+\begin{lstlisting}[caption={Parametry, eksperyment 3},label={lst:expParam3}]
+useHashTree=true
+useTaxonomies=true
+slidingWindowSize=0
+minSupport=15
+minGap=7
+maxGap=7
+timeConstraint=365
+\end{lstlisting}
+\begin{lstlisting}[caption={Wzorce, eksperyment 3},label={lst:expRes3}]
+support: 15
+0: {volume_change.sign:-1 , },
+1: {close_change.sign:1 , } ,
+2: {volume_change.sign:1 , } ,
+
+support: 16
+0: {volume_change.sign:-1 , }
+1: {volume_change.sign:1 , }
+2: {volume_change.sign:1 , } 
+\end{lstlisting}
+\paragraph{}Z wzorców pokazanych na Listingu \ref{lst:expRes3}. można wywnioskować, że po spadku wolumenu można się spodziewać jego wzrostu w 2 następnych tygodniach.
+
+\subsubsection{Szukanie max dwutygodniowych sekwencji}
+\paragraph{}Ten eksperyment to powtórzenie wyżej opisanego z rozluźnieniem okna czasowego. Inaczej mówiąc, jest to próba sprawdzenia czego można się spodziewać w następnym, albo jeszcze kolejnym tygodniu po wystąpieniu danej sekwencji. Listing \ref{lst:expParam4}. pokazuje parametry, dla których wykonano omawiany eksperyment.
+\begin{lstlisting}[caption={Parametry, eksperyment 4},label={lst:expParam4}]
+useHashTree=true
+useTaxonomies=true
+slidingWindowSize=0
+minSupport=20
+minGap=7
+maxGap=14
+timeConstraint=365
+\end{lstlisting}
+\begin{lstlisting}[caption={Wzorce, eksperyment 4},label={lst:expRes4}]
+support: 20
+0: {close_change.round:2 , close_change.sign:1 , },
+1: {volume_change.sign:1 , },
+2: {volume_change.sign:-1 , },
+3: {volume_change.sign:1 , },
+4: {volume_change.sign:-1 , }
+
+support: 25
+0: {close_change.sign:1 , volume_change.sign:-1 , },
+1: {volume_change.sign:1 , },
+2: {volume_change.sign:-1 , },
+3: {close_change.sign:1 , },
+4: {volume_change.sign:1 , } ,
+
+support: 20
+0: {volume_change.sign:-1 , close_change.sign:-1 , },
+1: {volume_change.sign:1 , },
+2: {volume_change.sign:-1 , },
+3: {volume_change.sign:1 , },
+4 : {volume_change.sign:-1 , } ,
+\end{lstlisting}
+\paragraph{}Ze wszystkich trzech wzorców znalezionych w tym eksperymencie można wyciągnąć jednakowy wniosek: serie początkowe mogą poprzedzać wahania wolumenu.
+
+\subsubsection{Poszukiwania bez użycia taksonomii}
+\paragraph{}Taki eksperyment nie daje żadnych wyników, nawet przy dużym oknie czasowym. Należy więc pamiętać o tym, że korzystanie z taksonomii jest kluczowe przy wszystkich eksperymentach.
+\newpage
 \section{Wnioski}
 \paragraph{}Algorytm jest mocno sparametryzowany, co z jednej strony jest korzyścią, jako że, potencjalnie można wygenerować więcej reguł, uwzględniając pewne rozluźnienie standardowego algorytmu generacji wzorców sekwencyjnych. Jednak nieodpowiedni dobór parametrów może prowadzić do wygenerowania błędnych wzorców. W szczególności gdy rozmiaru okna czasowego jest mniejszy lub równy dwukrotności minimalnego odstępu między transakcjami zachodzi sytuacja gdzie ten sam element jest brany pod uwagę wielokrotnie. W naszej aplikacji zastosowaliśmy dodatkowy warunek, który musi być spełniony żeby sekwencja została zaliczona. Warunek ma postać:
 \begin{equation}
-t_{min}(s_i) - t_{max}(s_i-1) \geq minGap
+t_{min}(s_i) - t_{max}(s_{i-1}) \geq minGap
 \end{equation}
-\paragraph{}Wykorzystanie generycznych taksonomii w postaci a) zaokrąglenie do pełnej liczby b) znak dodatni lub ujemny, dla wartości numerycznych zaciemnił obraz, powstało dużo wzorców sekwencyjnych, które wydaje się, że nie wnoszą żadnej wiedzy.
+\paragraph{}Wykorzystanie generycznych taksonomii w postaci
+\begin{itemize}
+\item zaokrąglenie do pełnej liczby,
+\item znak dodatni lub ujemny,
+\end{itemize}
+dla wartości numerycznych zaciemnił obraz, powstało dużo wzorców sekwencyjnych, które wydaje się, że nie wnoszą żadnej wiedzy.
 \paragraph{}Stworzona aplikacja spełnia wszystkie cele założone na początku projektu, działa poprawnie oraz jest wystarczająco wydajna, aby można było ją używać do prostych eksperymentów. Aplikacja w pełni nadaje się do demonstracji działania algorytmu GSP oraz celów dydaktycznych. Jej wydajność można oczywiście znacząco poprawić np. przepisując cały program na język C, lecz wymagało by to odrobinę więcej czasu, niż implementacja tych samych funkcjonalności w języku Java.
 \paragraph{}Stworzone oprogramowanie nie nadaje się do zastosowań badawczych ani biznesowych przez zbyt małą wydajność oraz niewielką liczbę funkcjonalności, ale stanowi dobrą podstawę do dalszego rozwoju.
 
