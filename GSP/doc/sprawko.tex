@@ -86,11 +86,21 @@ Dodatkowo:
 
 \section{Rozwiązanie}
 \label{sec:rozwiazanie}
-\paragraph{} Do rozwiązania wyżej postawionego problemu został wykorzystany algorytm Generalized Sequential Patterns (GSP) \cite{bib:GSP}. Jako dane do testowania oraz eksperymentów wybrano notowania giełdowe indeksu Dow Jones, pobrane ze strony \cite{bib:DowJones}.
+\paragraph{} Do rozwiązania wyżej postawionego problemu został wykorzystany algorytm Generalized Sequential Patterns (GSP) \cite{bib:GSP}. Jest to algorytm posiadający następujące cechy:
+\begin{itemize}
+\item Wykorzystuje taksonomię,
+\item Pozwala na wykorzystanie okna czasowego(sliding window), oznacza to, że transakcje oddalone od siebie o czas mniejszy niż rozmiar okna, mogą być traktowane jako jedna transakcja,
+\item Wprowadza ograniczenia czasowe: minimalny(minGap) i maksymalny(maxGap) odstęp czasowy między transakcjami. 
+\end{itemize}
+Jako dane do testowania oraz eksperymentów wybrano notowania giełdowe indeksu Dow Jones, pobrane ze strony \cite{bib:DowJones}.
 
 \section{Implementacja}
 
 \subsection{Funkcjonalności aplikacji}
+\subsubsection{Główne klasy}
+\paragraph{}Podstawową funkcją klasy $CSVReader$ jest budowa serii danych, na podstawie pliku csv. Plik wejściowy musi mieć w pierwszej kolumnie nazwę serii, a w drugiej datę. W trakcie przetwarzania tworzony jest słownik, który przypisuje unikalnym przedmiotom identyfikatory numeryczne, którymi operuje algorytm. Wykorzystywanie wartości numerycznych ułatwia i przyspiesza działanie. 
+\paragraph{}Klasa $SequencePatterns$ zawiera główy kod aplikacji. Metoda $runAlgoritm()$ działa w sposób iteracyjny, gdzie warunkiem stopu jest pusta lista kandydatów zweryfikowanych pod względem wsparcia. Metodę można uruchomić w dwóch trybach, z użyciem drzewa hashującego i bez. Pojedyncza iteracja zaczyna się od wygenerowania kandydatów zgodnie z zasadami algorytmu GSP, czyli z wykorzystaniem dwóch faz łączenia i przycinania. Następnie kandydaci są weryfikowani, w tym miejscu w zależności od trybu uruchomienia może być wykorzystanie drzewo hashujące, które ograniczy liczbę kandydatów do weryfikacji. Weryfikacja zgodna z algorytmem GSP analizuje serie danych z osobna, z wykorzystaniem faz poruszania się do przodu i do tyłu. 
+\subsubsection{Dane wyjściowe}
 \paragraph{} Aplikacja wykonuje algorytm GSP (opisany w \cite{bib:GSP}), czyli wyszukuje wszystkie uogólnione wzorce sekwencyjne w zadanym pliku z danymi, przy zadanych parametrach algorytmu (patrz \ref{subsec:Param}). Jako wynik działania, aplikacja kieruje do standardowego strumienia wyjścia następujące informacje:
 \begin{itemize}
 \item Raport z wyszukiwania wzorców sekwencyjnych (przykład: Listing \ref{lst:result1}.),
@@ -109,6 +119,7 @@ ver true 12
 \item Informacje dotyczące samego wykonania algorytmu,
 \item Wskaźniki wydajności.
 \end{itemize}
+\newpage
 \begin{lstlisting}[caption={Podsumowanie},label={lst:result2}]
 SUMMARY
 
@@ -158,6 +169,7 @@ support: 20 : volume_change:0 ,
 \item ścieżka do pliku z danymi (parametr $dataFilePath$).
 \end{itemize}
 Przykładowy plik konfiguracyjny został pokazany na Listingu \ref{lst:config}.
+\newpage
 \begin{lstlisting}[caption={Przykładowy plik konfiguracyjny},label={lst:config}]
 useHashTree=true
 useTaxonomies=true
@@ -191,135 +203,117 @@ java -jar programGSP.jar "config.properties_custom" > output.txt
 \subsection{Jakościowe}
 \paragraph{} Poprawność działania aplikacji zostało przetestowane przy pomocy testów jednostkowych, zawartych w klasach $SequencePatternsTest$ oraz $CSVReaderTest$ (zawarte w plikach $.java$ o takich samych nazwach)
 \subsection{Wydajnościowe}
-\paragraph{} Sprawdzono również wydajność programu, w zależności od wielkości okna czasowego (sliding window) oraz tego, czy zostały wykorzystane drzewo hashujące oraz taksonomia. Testy przeprowadzone dla dwóch plików z danymi: małego oraz dużego (pod względem ilości rekordów).
-\paragraph{} Wyniki algorytmu uruchomionego bez użycia taksonomii nie są interesujące, niezależnie od zestawu danych oraz innych parametrów. algorytm znajdował bardzo mało sekwencji, wyniki nie nadawały się do żadnej sensownej interpretacji. Następujące parametry były stałe dla wszystkich testów:
+\paragraph{} Sprawdzono również wydajność programu, w zależności od wielkości okna czasowego (sliding window) oraz wsparcia. Testy przeprowadzone na pliku z danymi zawierającym 751 rekordów.
+\paragraph{} Wyniki algorytmu uruchomionego bez użycia taksonomii nie są interesujące, niezależnie od zestawu danych oraz innych parametrów. Algorytm znajdował bardzo mało sekwencji, wyniki nie nadawały się do żadnej sensownej interpretacji. Drzewo hashujące również było wykorzystywane za każdym razem, ze względu na istotność w przebiegu algorytmu. Następujące parametry były stałe dla wszystkich testów:
 \begin{itemize}
+\item $useHashTree$ = true,
 \item $useTaxonomies$ = true,
-\item $minSupport$ = 2,
-\item $minGap$ = 28,
-\item $maxGap$ = 49,
+\item $maxGap$ = 365,
 \item $timeConstraint$ = 365.
 \end{itemize}
-Przyjęto następujące oznaczenia dla wyników przedstawionych w Tabelach \ref{tab:1_1}. \ref{tab:1_2}. \ref{tab:2_1}. oraz \ref{tab:2_2}.:
+
+Tabela \ref{tab:1}. przedstawia zestawy parametrów, które zmieniały się pomiędzy poszczególnymi testami.
+\begin{table}[!hbt]
+\caption{Przypadki testowe}
+\centering
+\begin{tabular}{|r|r|r|r|}
+\hline
+Nr testu	& $slidingWindowSize$	& $minGap$	& $minSupport$	\\[1.2ex]\hline
+1			& 7						& 14		& 20			\\[1ex]\hline
+2			& 14					& 28		& 20			\\[1ex]\hline
+3			& 7						& 14		& 25			\\[1ex]\hline
+4			& 14					& 28		& 25			\\[1ex]\hline
+\end{tabular}
+\label{tab:1}
+\end{table}
+
+Tabela \ref{tab:2}. przedstawia wyniki testów. Przyjęto następujące oznaczenia dla wyników przedstawionych w Tabeli \ref{tab:2}. :
 \begin{itemize}
-\item[$sW$ - ]rozmiar okna czasowego (sliding window) w dniach,
-\item[$hT$ - ]zmienna binarna oznaczająca, czy zostało wykorzystane drzewo hashujące.
+\item[$potw\slash gen$ - ]stosunek potwierdzonych sekwencji do wygenerowanych kandydatów,
+\item[$czas\slash sekw$ - ]śr. czas poświęcony na znalezienie potwierdzonej sekwencji,
+\item[$odrzuceni$ - ]liczba wzorców sekwencyjnych odrzuconych przez drzewo hashujące w trakcie wykonywania algorytmu,
+\item[$sekwencje$ - ]końcowa liczba znalezionych wzorców sekwencyjnych,
+\item[$czas$ - ]czas wykonania algorytmu.
 \end{itemize}
-
-\subsubsection{Testy dla pliku 'test4.csv'}
-\label{subsec:test}
-\paragraph{} Omawiany plik zawiera 10 rekordów. Tabele \ref{tab:1_1}. oraz \ref{tab:1_2}. przedstawiają wyniki testów.
-
 \begin{table}[!hbt]
-\caption{Śr. czas potrzebny na wygenerowanie jednej sekwencji [ms]}
+\caption{Wyniki testów wydajnościowych}
 \centering
-\begin{tabular}{|c|r|r|}
+\begin{tabular}{|r|r|r|r|r|r|}
 \hline
-$sW\backslash hT$	& true	& false	\\[1.2ex]\hline
-7					& 14.58	& 14.89	\\[1ex]\hline
-14					& 19.27	& 18.51	\\[1ex]\hline
+Nr testu	& $potw\slash gen$	& $czas\slash sekw$ [ms]	& $odrzuceni$	& $sekwencje$	& $czas$ [s]\\[1.2ex]\hline
+1			& 0.208				& 169.9						& 4039			& 2335			& 396.6		\\[1ex]\hline
+2			& 0.216				& 361.9						& 4019			& 2431			& 879.9		\\[1ex]\hline
+3			& 0.108				& 92.1						& 4019			& 699			& 64.4		\\[1ex]\hline
+4			& 0.174				& 191.0						& 4015			& 1406			& 268.6		\\[1ex]\hline
 \end{tabular}
-\label{tab:1_1}
+\label{tab:2}
 \end{table}
 
-\begin{table}[!hbt]
-\caption{Współczynnik wygenerowanych kandydatów do potwierdzonych sekwencji}
-\centering
-\begin{tabular}{|c|r|r|}
-\hline
-$sW\backslash hT$	& true	& false	\\[1.2ex]\hline
-7					& 0.400	& 0.400	\\[1ex]\hline
-14					& 0.614	& 0.614	\\[1ex]\hline
-\end{tabular}
-\label{tab:1_2}
-\end{table}
 
-\paragraph{}Rzut oka na Tabelę \ref{tab:1_2}. wystarczy aby wywnioskować, że dla okna czasowego o długości dwóch tygodni algorytm pracuje bardziej efektywnie, więcej kandydatów zostaje zaliczonych jako sekwencje. Lecz jak pokazuje Tabela \ref{tab:1_1}. obliczenia przy większym oknie czasowym wymagają większego nakładu czasowego, średni czas wyszukania jednej sekwencji jest dłuższy, niż dla okna czasowego o długości jednego tygodnia. Okazuje się, że fakt wykorzystania drzewa hashującego nie ma znaczącego wpływu na omawiane wyżej wskaźniki.
-
-\subsubsection{Testy dla pliku 'testBIG.csv'}
-\paragraph{} Omawiany plik zawiera 751 rekordów. Tabele \ref{tab:2_1}. oraz \ref{tab:2_2}. przedstawiają wyniki testów.
-
-\begin{table}[!hbt]
-\caption{Śr. czas potrzebny na wygenerowanie jednej sekwencji [ms]}
-\centering
-\begin{tabular}{|c|r|r|}
-\hline
-$sW\backslash hT$	& true	& false	\\[1.2ex]\hline
-7					& 103.2	& 120.5	\\[1ex]\hline
-14					& 161.5	& 166.7	\\[1ex]\hline
-\end{tabular}
-\label{tab:2_1}
-\end{table}
-
-\begin{table}[!hbt]
-\caption{Współczynnik wygenerowanych kandydatów do potwierdzonych sekwencji}
-\centering
-\begin{tabular}{|c|r|r|}
-\hline
-$sW\backslash hT$	& true	& false	\\[1.2ex]\hline
-7					& 0.107	& 0.107	\\[1ex]\hline
-14					& 0.174	& 0.174	\\[1ex]\hline
-\end{tabular}
-\label{tab:2_2}
-\end{table}
-
-\paragraph{}Wnioski z testów przeprowadzonych na większej porcji danych są analogiczne do tych przedstawionych na końcu sekcji \ref{subsec:test}.
+\paragraph{}Wyniki przedstawione w Tabeli \ref{tab:2}. wykazują, że dla wyższego minimalnego wsparcia wykonanie algorytmu trwa krócej, a znalezionych wzorców jest mniej, co było do proste przewidzenia. Niebanalny wniosek jest taki, że dla mniejszego wsparcia (testy 1 i 2) efektywność wyszukiwania sekwencji niewiele się zmienia wraz z rozszerzeniem okna czasowego, natomiast ten parametr ma dość duże znaczenie przy większym wsparciu (testy 3 i 4).
 
 \section{Eksperymenty}
 \subsection{Cel eksperymentów}
-\paragraph{}Celem eksperymentów opisanych w niniejszej sekcji jest wyszukanie wzorców sekwencyjnych, które pomogą przewidywać zmiany cen akcji na giełdzie. Aby sekwencje nadawały się do wnioskowania, muszą mieć możliwie wysokie wsparcie. wnioskowanie nie powinno dotyczyć przedziału większego, niż dwa tygodnie (aby zapewnić wzajemny wpływ poszczególnych wydarzeń). Oczywiście, sekwencje dotyczące wolumenu obrotu i jego zmian powinny być pominięte.
+\paragraph{}Celem eksperymentów opisanych w niniejszej sekcji jest wyszukanie wzorców sekwencyjnych, które pomogą przewidywać zmiany cen akcji na giełdzie. Aby sekwencje nadawały się do wnioskowania, muszą mieć relatywnie wysokie wsparcie w tym przypadku max to 30). Dzięki temu będzie można mieć pewność, że wystąpienie znalezionego wzorca w przyszłości jest wysokie. Wnioskowanie nie powinno dotyczyć okna czasowego większego, niż miesiąc (większe okno może zbyt często dopuszczać niesłuszne traktowanie dwóch bardzo oddalonych od siebie transakcji jako jedną).
 \subsection{Dane}
 \paragraph{}Oprogramowanie zostało napisane do badania notowań giełdowych, więc eksperymenty przeprowadzono na takich właśnie danych. Badano notowania indeksu Dow Jones, plik wsadowy zawierał 751 rekordów, dane pozyskano z \cite{bib:DowJones}.
 \subsection{Eksperymenty}
-\subsubsection{Parametry początkowe}
-\paragraph{}Jako punkt wyjścia przyjęto parametry pokazane na Listingu \ref{lst:expParam1}.
-\begin{lstlisting}[caption={Parametry początkowe},label={lst:expParam1}]
+\subsubsection{Dla wąskiego okna czasowego}
+\paragraph{}Listing \ref{lst:expParam1}. pokazuje parametry, dla których wykonano omawiany eksperyment.
+\begin{lstlisting}[caption={Parametry, eksperyment 1},label={lst:expParam1}]
 useHashTree=true
 useTaxonomies=true
 slidingWindowSize=7
-minSupport=10
-minGap=28
-maxGap=49
+minSupport=20
+minGap=14
+maxGap=365
 timeConstraint=365
 dataFilePath=testdata/testBIG.csv
 \end{lstlisting}
-\paragraph{}Uruchomienie algorytmu dla parametrów przedstawionych na Listingu \ref{lst:expParam1}. dało zdecydowanie za dużo sekwencji, więc te ustawienia zostały potraktowane jako punkt wyjścia do dalszych poszukiwań.
-\paragraph{}Wykorzystanie zarówno drzewa hashującego, jak i taksonomii jest sensowne, więc w dalszych eksperymentach te parametry nie będą modyfikowane. Bez zmian pozostaną również ograniczenie czasowe ($timeConstraint$) oraz plik z danymi.
+\paragraph{} Spośród wzorców znalezionych dla parametrów podanych na Listingu \ref{lst:expParam1}. wybrano dwa najciekawsze, przedstawiono je na Listingu \ref{lst:expRes1}.
+\begin{lstlisting}[caption={Wzorce, eksperyment 1},label={lst:expRes1}]
+supp:24
+0: {close_change.sign:1, volume_change.sign:-1},
+1: {close_change.round:-3}
 
-\subsubsection{Modyfikacja min. wsparcia}
-\paragraph{}Kolejne eksperymenty zostały wykonane dla kolejnych wartości min. wsparcia, aby znaleźć jak najczęściej występujące sekwencje. Ustawiono kolejno następujące wartości: 15, 25, 30. Najwyższe występujące wsparcie wynosiło właśnie 30, w ostatnim eksperymencie znaleziono 123 sekwencje, z czego 15 nie zawierało krótszych sekwencji dotyczących wolumenu. To niewielka liczba, lecz wciąż zbyt duża.
-\subsubsection{Modyfikacja wielkości okna czasowego}
-\paragraph{}Następnie ustawiono wielkość okna czasowego na wartości: 5, 3, 2, co oznacza branie pod uwagę przedziału (kolejno) 10 dni, 6 dni oraz 4 dni. zmiana wielkości okna czasowego na 5 poskutkowało zmniejszeniem liczby znalezionych sekwencji do 71, lecz dalsza modyfikacja tego parametru nie przyniosła żadnych efektów, więc pozostano przy wartości 5. Z wyszukanych sekwencji 9 nie zawierało elementów dotyczących wolumenu, a 5 z nich składało się z więcej niż jednego elementu. To liczba odpowiednio mała, aby przystąpić do szczegółowej analizy wyników.
-\subsection{Wyniki}
-\paragraph{}W wyniku wyżej opisanych eksperymentów otrzymano 5 sekwencji składających się z co najmniej dwóch elementów dotyczących jedynie cen akcji. Listing \ref{lst:resParam}. pokazuje parametry, dla jakich uzyskano ten wynik, a wspomniane sekwencje znajdują się na Listingu \ref{lst:resSeq1}.
-\begin{lstlisting}[caption={Parametry ostateczne},label={lst:resParam}]
+supp:20
+0: {close_change.sign:-1, volume_change.sign:-1},
+1: {close_change.round:2}
+\end{lstlisting}
+\paragraph{}Z dwóch wzorców sekwencyjnych przedstawionych na Listingu \ref{lst:expRes1}. wynikają dwa analogiczne wnioski, które w pewien sposób potwierdzają się na wzajem. Pierwszy z nich oznacza, że dla 24/30 serii występuje następujący wzorzec: jeżeli zaobserwowano wzrost ceny akcji oraz spadek wolumenu obrotu giełdowego, to można się później spodziewać spadku cen akcji o ok. 3 procent. Drugi można wytłumaczyć tak, że dla 20/30 serii występuje wzorzec: jeżeli zaobserwowano spadek ceny akcji oraz spadek wolumenu obrotu giełdowego, to można się później spodziewać wzrostu cen akcji o ok. 2 procent.
+\newpage
+\subsubsection{Dla szerokiego okna czasowego}
+\paragraph{}Listing \ref{lst:expParam2}. pokazuje parametry, dla których wykonano omawiany eksperyment.
+\begin{lstlisting}[caption={Parametry, eksperyment 1},label={lst:expParam2}]
 useHashTree=true
 useTaxonomies=true
-slidingWindowSize=5
-minSupport=30
+slidingWindowSize=14
+minSupport=20
 minGap=28
-maxGap=49
+maxGap=365
 timeConstraint=365
 dataFilePath=testdata/testBIG.csv
 \end{lstlisting}
-\newpage
-\begin{lstlisting}[caption={Sekwencje wynikowe},label={lst:resSeq1}]
-support: 30 : {close.sign:1 , close_change.round:-1 , } ,
-support: 30 : {close.sign:1 , close_change.sign:-1 , } ,
-support: 30 : {close.sign:1 , close_change.sign:1 , } ,
-support: 30 : {close_change.sign:-1 , close_change.round:-1 , } ,
-support: 30 : {close.sign:1 , close_change.sign:-1 , close_change.round:-1 }
+\paragraph{}Ciekawa obserwacja: w przeciwieństwie do poprzedniego eksperymentu, w wynikach tego nie występują wzorce składające się z więcej, niż jednej sekwencji. Mimo tego, eksperyment dał kilka ciekawych wyników, np. sekwencje przedstawione na Listingu \ref{lst:expRes1}.
+\begin{lstlisting}[caption={Wzorce, eksperyment 1},label={lst:expRes1}]
+support: 20 
+0: {close_change.round:-4 , close_change.sign:-1 , volume_change.sign:1 , } ,
+
+support: 20
+0: {close_change.round:-4 , close_change.sign:-1 , volume_change.sign:-1 , } ,
 \end{lstlisting}
-\paragraph{}Poniżej przedstawiono najbardziej interesujące zależności, jakie można wywnioskować z sekwencji wymienionych na Listingu \ref{lst:resSeq1}. :
-\begin{itemize}
-\item Sekwencje oznaczone numerem 2 oraz 3 występują równie często, co oznacza, że równie często cena akcji spada jak i rośnie ($close_change.sign$ oznacza znak zmiany procentowej ceny akcji). Taki wniosek wzięty bez dodatkowych założeń daje do myślenia, ponieważ jest tożsamy ze stwierdzeniem, że na giełdzie równie często się zyskuje, co traci.
-\item Sekwencja oznaczona numerem 4 pokazuje, że najczęściej występującą zaokrągloną wielkością straty ($close_change.sign$:-1) jest -1 ($close_change.round$:-1), co oznacza, że jeżeli cena akcji spada, to najczęściej o około jeden punkt procentowy. To pocieszający wniosek, gdyż podpowiada, że nawet jeżeli inwestor traci, to najczęściej niedużo na przestrzeni 10 dni ($slidingwindowSize$=5).
-\end{itemize}
-\paragraph{}Wyżej opisane zależności spełniają cel założony na początku eksperymentów, gdyż wynikają z nich sensowne wnioski, możliwe do zastosowania w rzeczywistości. Oczywiście, dla wyższej wiarygodności eksperymenty powinny zostać przeprowadzone na większych i bardziej różnorodnych zbiorach danych.
+\paragraph{}Z pokazanych sekwencji można wywnioskować, że duży spadek ceny akcji (ok. 4 procent) nie idzie w parze z żadną konkretną zmianą wolumenu obrotu. W jednej z sekwencji duży spadek ceny akcji występuje ze spadkiem, a w drugiej ze wzrostem wolumenu obrotu giełdowego. Można z tego wyciągnąć następujący wniosek: niezależnie od zainteresowania daną spółką inwestor może dużo stracić. Zwiększenie ani zmniejszenie wolumenu obrotu akcjami tej spółki ani nie zwiastuje straty, ani zysku. Ten wniosek nie jest tak banalny, jak się wydaje, gdyż wielu inwestorów odczytuje rosnące zainteresowanie spółką jako zwiastun wzrostu ceny akcji, lecz jak pokazują znalezione sekwencje, nie jest to uzasadnione.
 
 \section{Wnioski}
+\paragraph{}Algorytm jest mocno sparametryzowany, co z jednej strony jest korzyścią, jako że, potencjalnie można wygenerować więcej reguł, uwzględniając pewne rozluźnienie standardowego algorytmu generacji wzorców sekwencyjnych. Jednak nieodpowiedni dobór parametrów może prowadzić do wygenerowania błędnych wzorców. W szczególności gdy rozmiaru okna czasowego jest mniejszy lub równy dwukrotności minimalnego odstępu między transakcjami zachodzi sytuacja gdzie ten sam element jest brany pod uwagę wielokrotnie. W naszej aplikacji zastosowaliśmy dodatkowy warunek, który musi być spełniony żeby sekwencja została zaliczona. Warunek ma postać:
+\begin{equation}
+t_{min}(s_i) - t_{max}(s_i-1) \geq minGap
+\end{equation}
+\paragraph{}Wykorzystanie generycznych taksonomii w postaci a) zaokrąglenie do pełnej liczby b) znak dodatni lub ujemny, dla wartości numerycznych zaciemnił obraz, powstało dużo wzorców sekwencyjnych, które wydaje się, że nie wnoszą żadnej wiedzy.
 \paragraph{}Stworzona aplikacja spełnia wszystkie cele założone na początku projektu, działa poprawnie oraz jest wystarczająco wydajna, aby można było ją używać do prostych eksperymentów. Aplikacja w pełni nadaje się do demonstracji działania algorytmu GSP oraz celów dydaktycznych. Jej wydajność można oczywiście znacząco poprawić np. przepisując cały program na język C, lecz wymagało by to odrobinę więcej czasu, niż implementacja tych samych funkcjonalności w języku Java.
 \paragraph{}Stworzone oprogramowanie nie nadaje się do zastosowań badawczych ani biznesowych przez zbyt małą wydajność oraz niewielką liczbę funkcjonalności, ale stanowi dobrą podstawę do dalszego rozwoju.
+
+
 
 \nocite{*}
 \bibliography{bibl}
