@@ -35,6 +35,7 @@ public class SequencePatterns {
 	private int reduceCnt;
 	private ItemSetWithWindow isWW;
 	private ItemSet isCheck;
+	private HashMap<Long, ItemSet> itemSetsToCheck ;
 	
 	public SequencePatterns(String fileName){
 		candidateTree = new CandidateHashTree(-1, -1);
@@ -132,7 +133,7 @@ public class SequencePatterns {
 	}
 
 
-	
+	 //wygeneruj kandydatów jednoelementowych na podstawie słownika
 	private void initialCandidateGeneration() {
 		
 		 candidates = new HashMap<String, Series>();
@@ -154,6 +155,7 @@ public class SequencePatterns {
 		
 	}
 	
+	
 	private void candidateGenerationGSP() {
 		newCandidates = new ArrayList<Series>();
 		for(int i =0; i< supportedCandidates.size(); i++){
@@ -163,17 +165,16 @@ public class SequencePatterns {
 			for(int j = 0; j< supportedCandidates.size() ; j++){
 				rparent = supportedCandidates.get(j);
 				ArrayList<Series> newserieslist = lparent.merge(rparent);
+				// faza przycinania
+				
 				boolean prune= false;
 				
 				if(newserieslist != null){
 					for (Series newseries : newserieslist) {
+						
+						// przeszukaj podsekwencje będące wynikiem usunięcia przedmiotu z pierwszego elementu
 						ArrayList<Series> seriesToCheck = newseries.getSeriesByRemovingFirst();
 						prune = false;
-						if(newseries.toString().contains("0:[2,14] 1:[30]")){
-							int f=0;
-						}
-						
-						
 						for (Series sCh : seriesToCheck) {
 							boolean isIn = false;
 							for (Series previous : candidatesInit) {
@@ -188,41 +189,30 @@ public class SequencePatterns {
 								}
 								
 							}
-							//if(!isIn){
-							//	prune = true;
-							//	break;
-							//}
 						}
-						
+						// przeszukaj podsekwencje będące wynikiem usunięcia przedmiotu z ostatniego elementu
 						if(!prune){
 							seriesToCheck = newseries.getSeriesByRemovingLast();
-							//prune = false;
 							for (Series sCh : seriesToCheck) {
-							boolean isIn = false;
-							for (Series previous : candidatesInit) {
-								if(previous.equals(sCh)){
-									if(previous.getSupportByCheck() < minSupp){
-										prune= true;
-										break;
-									}else {
-										prune= false;
-										break;
+								for (Series previous : candidatesInit) {
+									if(previous.equals(sCh)){
+										if(previous.getSupportByCheck() < minSupp){
+											prune= true;
+											break;
+										}else {
+											prune= false;
+											break;
+										}
 									}
 								}
 							}
 						}
+							
+						if(!prune){
+							newCandidates.add(newseries);
+							
+						}
 					}
-						
-					if(!prune){
-						newCandidates.add(newseries);
-						
-					}else {
-						//System.out.println("prune");
-					}
-				}
-					
-					
-					//newCandidates.addAll(newserieslist);
 				}
 			}
 		}
@@ -244,11 +234,13 @@ public class SequencePatterns {
 	
 	public void checkSupport(boolean withHashTree) {
 
-		
-		
 		if(withHashTree){
 			buildCandidateHashTree();
+			// Przygotuj informację o tym które wartości 
+			// wyniku funkcji hasującej analizować w węzłach
 			checkTree();
+			// Zweryfikuj za pomocą drzewa które serie
+			// mogą wspierać kandydatów (licznik)
 			checkCandidateTree();
 			candidatesInit= candidateTree.getRoot().getCandidateSeries(minSupp);
 			System.out.println("candidates rejected by hash tree: " + (candidateTree.getRoot().getCandidateSeries().size() - candidatesInit.size()));
@@ -262,8 +254,8 @@ public class SequencePatterns {
 			}
 			
 		}
-		ArrayList<Series> candidatesToCheck = new ArrayList<Series>();
 		
+		ArrayList<Series> candidatesToCheck = new ArrayList<Series>();
 		Series analysedSeries;
 	
 		if(candidatesInit == null || candidatesInit.size() ==0){
@@ -273,10 +265,11 @@ public class SequencePatterns {
 		
 		int size = candidatesInit.get(0).getDataSeq().size();
 		for(Series candidate : candidatesInit){
-
 			if(size ==1){
 				candidatesToCheck.add(candidate);
 			}else {
+				// Usuń z listy kandydatów, tych których wsparcie wynikające
+				// ze sprawdzenia drzewa hasującego jest mniejsze niż minSupp
 				int[] candidateMinusOne = candidate.getItemsOrderedMinusOne();
 				for(Series suppcandidate : supportedCandidates){
 					if(suppcandidate.shouldCheck(candidateMinusOne)){
@@ -313,7 +306,9 @@ public class SequencePatterns {
 							datesToCheck.add(date);
 						}
 					}
-					HashMap<Long, ItemSet> itemSetsToCheck = new HashMap<Long, ItemSet>();
+					
+					// itemSetsToCheck łuży sprawdzaniu otoczenia <t- slidingWindow, t + slidingWindow>
+					itemSetsToCheck = new HashMap<Long, ItemSet>();
 					for (Long date : datesToCheck) {
 						itemSetsToCheck.put(date, analysedSeries.getDataSeq().get(date));
 					}
@@ -336,6 +331,7 @@ public class SequencePatterns {
 							}
 						}else {
 							if( (t -tsi) <= maxGap  
+									
 									&& ( (tmin-tsimax) >= minGap )){	
 								
 								if(((t - ts1) <= timeConstraint)){

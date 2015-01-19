@@ -49,13 +49,9 @@ public class CandidateHashTree {
 		if(node instanceof Leaf){
 			ArrayList<Series> candidates = node.getCandidateSeries();
 			for (Series s : candidates) {
-				//inaczej
 				ItemSet is = new ItemSet(i);
 				if(s.getDataSeq().get(s.getLastDate()).contains(is)){
-					//s.supportIncr();
 					s.addSupportedByHash(series.getSeriesName());
-					//System.out.println("increase for " + s);
-					
 				}
 			}
 		}else{
@@ -71,14 +67,11 @@ public class CandidateHashTree {
 						int[] items = elements.get(date).getItems();
 						for (int j : items) {
 							if(node.getHashesToCheck()[node.hash(j)]){
-								//System.out.println("it is internal for " + j + " t= " + date);
 								checkNode(node, series, date, j);
 							}
 						}	
 					}
-					
 				}
-				
 			}
 		}	
 	}
